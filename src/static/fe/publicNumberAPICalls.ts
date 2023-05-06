@@ -1,15 +1,25 @@
 import paths from "../paths.js";
 import { throwMissingPropError, updatePublicNumber } from "./helpers.js";
 
+type PublicNumberResponse = {
+  publicNumber: number;
+};
+
+const isPublicNumberResponseType = (
+  value: unknown
+): value is PublicNumberResponse => {
+  return typeof value === "object" && value !== null && "publicNumber" in value;
+};
+
 export const getPublicNumber = async () => {
   const method = "GET";
   const url = `${paths.BASE_URL}${paths.API_PUBLIC_NUMBER}`;
 
   try {
     const response = await fetch(url, { method });
-    const jsonResponse = await response.json();
+    const jsonResponse: unknown = await response.json();
 
-    if (!jsonResponse?.publicNumber) {
+    if (!isPublicNumberResponseType(jsonResponse)) {
       throwMissingPropError({
         method,
         url,
@@ -30,9 +40,9 @@ export const handleGeneratePublicNumber = async () => {
 
   try {
     const response = await fetch(url, { method });
-    const jsonResponse = await response.json();
+    const jsonResponse: unknown = await response.json();
 
-    if (!jsonResponse?.publicNumber) {
+    if (!isPublicNumberResponseType(jsonResponse)) {
       throwMissingPropError({
         method,
         url,
@@ -50,9 +60,10 @@ export const handleGeneratePublicNumber = async () => {
 export const handleUpdatePublicNumber = async () => {
   const method = "PUT";
   const url = `${paths.BASE_URL}${paths.API_PUBLIC_NUMBER}`;
-  const publicNumber = new Number(
-    document.getElementById("publicNumberInput").value
-  );
+  const publicNumberInput = document.getElementById(
+    "publicNumberInput"
+  ) as HTMLInputElement;
+  const publicNumber = new Number(publicNumberInput.value);
 
   try {
     const response = await fetch(url, {
@@ -62,9 +73,9 @@ export const handleUpdatePublicNumber = async () => {
         "Content-Type": "application/json",
       },
     });
-    const jsonResponse = await response.json();
+    const jsonResponse: unknown = await response.json();
 
-    if (!jsonResponse?.publicNumber) {
+    if (!isPublicNumberResponseType(jsonResponse)) {
       throwMissingPropError({
         method,
         url,

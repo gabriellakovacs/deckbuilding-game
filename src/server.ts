@@ -1,12 +1,12 @@
-import http from "http";
-import fs from "fs";
+import * as http from "http";
+import * as fs from "fs";
 import { WebSocketServer } from "ws";
 import Game from "./controllers/gameController.js";
 import User from "./controllers/userController.js";
 import Paths from "./static/paths.js";
 
 const PORT = process.env.PORT || 5000;
-const webSocketServer = new WebSocketServer({ port: "8080" });
+const webSocketServer = new WebSocketServer({ port: 8080 });
 
 webSocketServer.on("connection", (socket) => {
   console.log("WS connected");
@@ -32,9 +32,12 @@ const server = http.createServer(async (req, res) => {
   }
 
   // STATIC FE FILES
-  else if (req.url.match(/\/static\/fe\/(\w+)/) && req.method === "GET") {
+  else if (
+    req.url.match(/\/public\/static\/fe\/(\w+)/) &&
+    req.method === "GET"
+  ) {
     try {
-      const staticPath = req.url.split("/")[3];
+      const staticPath = req.url.split("/")[4];
       const staticFile = fs.readFileSync(
         `${Paths.STATIC_FE_FILES_PATH}/${staticPath}`,
         "utf8"
@@ -48,9 +51,9 @@ const server = http.createServer(async (req, res) => {
   }
 
   // STATIC FILES
-  else if (req.url.match(/\/static\/(\w+)/) && req.method === "GET") {
+  else if (req.url.match(/\/public\/static\/(\w+)/) && req.method === "GET") {
     try {
-      const staticPath = req.url.split("/")[2];
+      const staticPath = req.url.split("/")[3];
       const staticFile = fs.readFileSync(
         `${Paths.STATIC_FILES_PATH}/${staticPath}`,
         "utf8"

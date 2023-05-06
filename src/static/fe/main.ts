@@ -14,7 +14,7 @@ import { handleCreateNewUser } from "./userAPICalls.js";
 export const checkForExistingUserIdAndGeneratedNumbers = async () => {
   const userId = Number(getUserIdFromCurrentUrl());
 
-  if (userId && typeof userId === "number") {
+  if (userId) {
     updateUIWithUser();
     await getPrivateNumber(userId);
   }

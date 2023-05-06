@@ -1,18 +1,32 @@
-import fs from "fs";
+import * as fs from "fs";
 import { GAME_DB_PATH } from "../static/paths.js";
 import gameHelpers from "./gameModel.js";
 
-const getUserObjectById = (userId) => {
+type User = {
+  privateNumber?: number;
+};
+
+const isUserType = (value: unknown): value is User => {
+  return typeof value === "object" && value !== null;
+};
+
+const getUserObjectById = (userId): User => {
   try {
     const user = fs.readFileSync(`${GAME_DB_PATH}/user_${userId}.json`, "utf8");
-    return user[0] === "{" ? JSON.parse(user) : {};
+    const userJson = user[0] === "{" ? JSON.parse(user) : {};
+    if (!isUserType(userJson)) {
+      throw new Error(
+        `Unexpected content of user_${userId}.json does not align with User type`
+      );
+    }
+    return userJson;
   } catch (error) {
     console.log(error);
   }
 };
 
-const getNextUserId = (currentGame) => {
-  const existingUserIds = currentGame.userIds;
+const getNextUserId = () => {
+  const existingUserIds = gameHelpers.getCurrentUserIds();
   if (!existingUserIds) {
     return 1;
   }
@@ -21,7 +35,7 @@ const getNextUserId = (currentGame) => {
 
 const saveNewUserIdInGame = () => {
   const currentGame = gameHelpers.getCurrentGameObject();
-  const nextUserId = getNextUserId(currentGame);
+  const nextUserId = getNextUserId();
 
   try {
     fs.writeFileSync(
@@ -50,7 +64,13 @@ const createNewUserFile = () => {
   }
 };
 
-const savePrivateNumberInUser = ({ privateNumber, userId }) => {
+const savePrivateNumberInUser = ({
+  privateNumber,
+  userId,
+}: {
+  privateNumber: number;
+  userId: number;
+}) => {
   try {
     fs.writeFileSync(
       `${GAME_DB_PATH}/user_${userId}.json`,
@@ -61,7 +81,7 @@ const savePrivateNumberInUser = ({ privateNumber, userId }) => {
   }
 };
 
-const getPrivateNumberFromUser = (userId) => {
+const getPrivateNumberFromUser = (userId: number) => {
   try {
     const userObject = getUserObjectById(userId);
     return userObject.privateNumber || null;

@@ -5,15 +5,27 @@ import {
   getUserIdFromCurrentUrl,
 } from "./helpers.js";
 
-export const getPrivateNumber = async (userId) => {
+type PrivateNumberResponse = {
+  privateNumber: number;
+};
+
+const isPrivateNumberResponseType = (
+  value: unknown
+): value is PrivateNumberResponse => {
+  return (
+    typeof value === "object" && value !== null && "privateNumber" in value
+  );
+};
+
+export const getPrivateNumber = async (userId: number) => {
   const method = "GET";
   const url = `${paths.BASE_URL}${paths.API_PRIVATE_NUMBER(userId)}`;
 
   try {
     const response = await fetch(url, { method });
-    const jsonResponse = await response.json();
+    const jsonResponse: unknown = await response.json();
 
-    if (!jsonResponse?.privateNumber) {
+    if (!isPrivateNumberResponseType(jsonResponse)) {
       throwMissingPropError({
         method,
         url,
@@ -35,9 +47,9 @@ export const handleGeneratePrivateNumber = async () => {
 
   try {
     const response = await fetch(url, { method });
-    const jsonResponse = await response.json();
+    const jsonResponse: unknown = await response.json();
 
-    if (!jsonResponse?.privateNumber) {
+    if (!isPrivateNumberResponseType(jsonResponse)) {
       throwMissingPropError({
         method,
         url,
@@ -56,9 +68,10 @@ export const handleUpdatePrivateNumber = async () => {
   const method = "PUT";
   const userId = getUserIdFromCurrentUrl();
   const url = `${paths.BASE_URL}${paths.API_PRIVATE_NUMBER(userId)}`;
-  const privateNumber = new Number(
-    document.getElementById("privateNumberInput").value
-  );
+  const privateNumberInput = document.getElementById(
+    "privateNumberInput"
+  ) as HTMLInputElement;
+  const privateNumber = new Number(privateNumberInput.value);
 
   try {
     const response = await fetch(url, {
@@ -69,9 +82,9 @@ export const handleUpdatePrivateNumber = async () => {
       },
     });
 
-    const jsonResponse = await response.json();
+    const jsonResponse: unknown = await response.json();
 
-    if (!jsonResponse?.privateNumber) {
+    if (!isPrivateNumberResponseType(jsonResponse)) {
       throwMissingPropError({
         method,
         url,

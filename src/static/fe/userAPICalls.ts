@@ -1,15 +1,25 @@
 import paths from "../paths.js";
 import { throwMissingPropError, updateUIWithUser } from "./helpers.js";
 
+type CreateNewUserResponse = {
+  userId: number;
+};
+
+const isCreateNewUserResponseType = (
+  value: unknown
+): value is CreateNewUserResponse => {
+  return typeof value === "object" && value !== null && "userId" in value;
+};
+
 export const handleCreateNewUser = async () => {
   const method = "POST";
   const url = `${paths.BASE_URL}${paths.API_CREATE_USER}`;
 
   try {
     const response = await fetch(url, { method });
-    const jsonResponse = await response.json();
+    const jsonResponse: unknown = await response.json();
 
-    if (!jsonResponse?.userId) {
+    if (!isCreateNewUserResponseType(jsonResponse)) {
       throwMissingPropError({ method, url, jsonResponse, propName: "userId" });
       return;
     }

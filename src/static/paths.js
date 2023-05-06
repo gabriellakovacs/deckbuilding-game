@@ -1,9 +1,9 @@
 export const BASE_URL = "";
 
 export const GAME_DB_PATH = "./database";
-export const INDEX_HTML_PATH = "./static/fe/index.html";
-export const STATIC_FILES_PATH = "./static";
-export const STATIC_FE_FILES_PATH = "./static/fe";
+export const INDEX_HTML_PATH = "./public/static/fe/index.html";
+export const STATIC_FILES_PATH = "./public/static";
+export const STATIC_FE_FILES_PATH = "./public/static/fe";
 
 export const API_GAME = "api/game";
 export const API_PUBLIC_NUMBER = "/api/public-number";

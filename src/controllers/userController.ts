@@ -1,8 +1,27 @@
 import userModel from "../models/userModel.js";
+import { getCurrentUserIds } from "../models/gameModel.js";
 import { getReqData } from "../utils.js";
 
 const headerContentJson = {
   "Content-Type": "application/json",
+};
+
+const isValidUserId = (userId: unknown) => {
+  if (typeof userId !== "number") {
+    return false;
+  }
+  const existingUserIds = getCurrentUserIds();
+  return existingUserIds.includes(userId);
+};
+
+const resWrongUserID = (res, userId) => {
+  res.writeHead(400, headerContentJson);
+  res.end(
+    JSON.stringify({
+      success: false,
+      message: `Id: ${userId} does not exist`,
+    })
+  );
 };
 
 const createUser = async (req, res) => {
@@ -15,7 +34,11 @@ const createUser = async (req, res) => {
 
 const getPrivateNumber = (req, res) => {
   const userId = req.url.split("/")[3];
-  // TODO: check if this id exists
+
+  if (!isValidUserId(userId)) {
+    resWrongUserID(res, userId);
+    return;
+  }
   const privateNumber = userModel.getPrivateNumberFromUser(userId);
   res.writeHead(200, headerContentJson);
   res.end(JSON.stringify({ privateNumber }));
@@ -23,7 +46,11 @@ const getPrivateNumber = (req, res) => {
 
 const createNewPrivateNumber = (req, res) => {
   const userId = req.url.split("/")[3];
-  // TODO: check if this id exists
+
+  if (!isValidUserId(userId)) {
+    resWrongUserID(res, userId);
+    return;
+  }
   const privateNumber = Math.round(Math.random() * 100);
   userModel.savePrivateNumberInUser({ privateNumber, userId });
   res.writeHead(200, headerContentJson);
@@ -32,8 +59,17 @@ const createNewPrivateNumber = (req, res) => {
 
 const updatePrivateNumber = async (req, res) => {
   const userId = req.url.split("/")[3];
-  // TODO: check if this id exists
+
+  if (!isValidUserId(userId)) {
+    resWrongUserID(res, userId);
+    return;
+  }
   const data = await getReqData(req);
+  if (typeof data !== "string") {
+    throw new Error(
+      `Invalid data type: ${typeof data} for updatePrivateNumber`
+    );
+  }
   const privateNumber = JSON.parse(data)?.privateNumber;
 
   if (typeof privateNumber === "number") {
@@ -43,7 +79,7 @@ const updatePrivateNumber = async (req, res) => {
     return;
   }
 
-  res.writeHead(200, headerContentJson);
+  res.writeHead(400, headerContentJson);
   res.end(
     JSON.stringify({
       success: false,

@@ -32,6 +32,9 @@ const createNewPublicNumber = (req, res, webSocketServer) => {
 
 const updatePublicNumber = async (req, res, webSocketServer) => {
   const data = await getReqData(req);
+  if (typeof data !== "string") {
+    throw new Error(`Invalid data type: ${typeof data} for updatePublicNumber`);
+  }
   const publicNumber = JSON.parse(data)?.publicNumber;
   if (typeof publicNumber === "number") {
     gameModel.savePublicNumberInGame(publicNumber);
@@ -45,7 +48,7 @@ const updatePublicNumber = async (req, res, webSocketServer) => {
     return;
   }
 
-  res.writeHead(200, headerContentJson);
+  res.writeHead(400, headerContentJson);
   res.end(
     JSON.stringify({
       success: false,
