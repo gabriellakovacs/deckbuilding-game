@@ -2,6 +2,7 @@ import * as fs from "fs";
 import userModel from "./userModel.js";
 import { GAME_DB_PATH } from "../static/paths.js";
 import { GameResponse } from "../static/types.js";
+import { getOriginalAvailableCards } from "../cardHelpers.js";
 
 const GAME_DB_FILE = "game.json";
 
@@ -146,6 +147,7 @@ const saveGameStart = () => {
       ...currentGameObject,
       hasStarted: true,
       currentTurnUserId: currentGameObject.userIds[0],
+      availableCards: getOriginalAvailableCards(),
     };
     fs.writeFileSync(
       `${GAME_DB_PATH}/${GAME_DB_FILE}`,
