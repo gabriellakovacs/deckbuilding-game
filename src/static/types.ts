@@ -11,8 +11,8 @@ type CardListInGame = {
 
 export type GameResponse = {
   hasStarted: boolean;
-  userIds: number[];
-  currentTurnUserId?: number;
+  playerIds: number[];
+  currentTurnPlayerId?: number;
   publicNumber?: number;
   availableCards?: CardListInGame;
 };

@@ -1,63 +1,63 @@
-import userModel from "../models/userModel.js";
-import { getCurrentUserIds } from "../models/gameModel.js";
+import playerModel from "../models/playerModel.js";
+import { getCurrentPlayerIds } from "../models/gameModel.js";
 import { getReqData } from "../utils.js";
 
 const headerContentJson = {
   "Content-Type": "application/json",
 };
 
-const isValidUserId = (userId: unknown) => {
+const isValidPlayerId = (playerId: unknown) => {
   if (
-    userId === null ||
-    userId === undefined ||
-    typeof Number(userId) !== "number"
+    playerId === null ||
+    playerId === undefined ||
+    typeof Number(playerId) !== "number"
   ) {
     return false;
   }
-  const existingUserIds = getCurrentUserIds();
-  return existingUserIds.includes(Number(userId));
+  const existingPlayerIds = getCurrentPlayerIds();
+  return existingPlayerIds.includes(Number(playerId));
 };
 
-const resWrongUserID = (res, userId) => {
+const resWrongPlayerId = (res, playerId) => {
   res.writeHead(400, headerContentJson);
   res.end(
     JSON.stringify({
       success: false,
-      message: `Id: ${userId} does not exist`,
+      message: `Id: ${playerId} does not exist`,
     })
   );
 };
 
 const getPrivateNumber = (req, res) => {
-  const userId = req.url.split("/")[3];
+  const playerId = req.url.split("/")[3];
 
-  if (!isValidUserId(userId)) {
-    resWrongUserID(res, userId);
+  if (!isValidPlayerId(playerId)) {
+    resWrongPlayerId(res, playerId);
     return;
   }
-  const privateNumber = userModel.getPrivateNumberFromUser(userId);
+  const privateNumber = playerModel.getPrivateNumberFromPlayer(playerId);
   res.writeHead(200, headerContentJson);
   res.end(JSON.stringify({ privateNumber }));
 };
 
 const createNewPrivateNumber = (req, res) => {
-  const userId = req.url.split("/")[3];
+  const playerId = req.url.split("/")[3];
 
-  if (!isValidUserId(userId)) {
-    resWrongUserID(res, userId);
+  if (!isValidPlayerId(playerId)) {
+    resWrongPlayerId(res, playerId);
     return;
   }
   const privateNumber = Math.round(Math.random() * 100);
-  userModel.savePrivateNumberInUser({ privateNumber, userId });
+  playerModel.savePrivateNumberInPlayer({ privateNumber, playerId: playerId });
   res.writeHead(200, headerContentJson);
   res.end(JSON.stringify({ privateNumber }));
 };
 
 const updatePrivateNumber = async (req, res) => {
-  const userId = req.url.split("/")[3];
+  const playerId = req.url.split("/")[3];
 
-  if (!isValidUserId(userId)) {
-    resWrongUserID(res, userId);
+  if (!isValidPlayerId(playerId)) {
+    resWrongPlayerId(res, playerId);
     return;
   }
   const data = await getReqData(req);
@@ -69,7 +69,10 @@ const updatePrivateNumber = async (req, res) => {
   const privateNumber = JSON.parse(data)?.privateNumber;
 
   if (typeof privateNumber === "number") {
-    userModel.savePrivateNumberInUser({ userId, privateNumber });
+    playerModel.savePrivateNumberInPlayer({
+      playerId,
+      privateNumber,
+    });
     res.writeHead(200, headerContentJson);
     res.end(JSON.stringify({ success: true, privateNumber }));
     return;

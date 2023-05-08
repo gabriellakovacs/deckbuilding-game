@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import userModel from "./userModel.js";
+import playerModel from "./playerModel.js";
 import { GAME_DB_PATH } from "../static/paths.js";
 import { GameResponse } from "../static/types.js";
 import { getOriginalAvailableCards } from "../cardHelpers.js";
@@ -10,9 +10,9 @@ const isGameType = (value: unknown): value is GameResponse => {
   return (
     typeof value === "object" && value !== null
     // && "publicNumber" in value &&
-    // "userIds" in value &&
-    // Array.isArray(value.userIds) &&
-    // value.userIds.reduce((acc, current) => {
+    // "playerIds" in value &&
+    // Array.isArray(value.playerIds) &&
+    // value.playerIds.reduce((acc, current) => {
     //   return current && typeof acc === "number";
     // })
   );
@@ -37,15 +37,15 @@ export const getCurrentGameObject = (): GameResponse => {
   }
 };
 
-export const getCurrentUserIds = (): number[] => {
+export const getCurrentPlayerIds = (): number[] => {
   const currentGame = getCurrentGameObject();
-  return currentGame.userIds || [];
+  return currentGame.playerIds || [];
 };
 
 const createNewGame = () => {
   const newGameObject: GameResponse = {
     hasStarted: false,
-    userIds: [],
+    playerIds: [],
   };
   try {
     if (!fs.existsSync(GAME_DB_PATH)) {
@@ -68,30 +68,30 @@ const deleteGame = () => {
   }
 };
 
-const getNextUserId = () => {
-  const existingUserIds = getCurrentUserIds();
-  if (!existingUserIds) {
+const getNextPlayerId = () => {
+  const existingPlayerIds = getCurrentPlayerIds();
+  if (!existingPlayerIds) {
     return 1;
   }
-  return existingUserIds.length + 1;
+  return existingPlayerIds.length + 1;
 };
 
-const saveNewUserIdInGame = () => {
+const saveNewPlayerIdInGame = () => {
   const currentGame = getCurrentGameObject();
-  const nextUserId = getNextUserId();
-  userModel.createNewUserFile(nextUserId);
+  const nextPlayerId = getNextPlayerId();
+  playerModel.createNewPlayerFile(nextPlayerId);
   const newGameObject: GameResponse = {
     ...currentGame,
-    userIds: currentGame.userIds
-      ? [...currentGame.userIds, nextUserId]
-      : [nextUserId],
+    playerIds: currentGame.playerIds
+      ? [...currentGame.playerIds, nextPlayerId]
+      : [nextPlayerId],
   };
   try {
     fs.writeFileSync(
       `${GAME_DB_PATH}/game.json`,
       JSON.stringify(newGameObject)
     );
-    return { game: newGameObject, userId: nextUserId };
+    return { game: newGameObject, playerId: nextPlayerId };
   } catch (error) {
     throw new Error(error);
   }
@@ -113,22 +113,22 @@ const savePublicNumberInGame = (publicNumber: number) => {
   }
 };
 
-const getNextTurnUserId = (currentGameObject: GameResponse) => {
-  const { currentTurnUserId } = currentGameObject;
-  const currentTurnUserIdIndex =
-    currentGameObject.userIds.indexOf(currentTurnUserId);
-  return currentTurnUserIdIndex === currentGameObject.userIds.length - 1
-    ? currentGameObject.userIds[0]
-    : currentGameObject.userIds[currentTurnUserIdIndex + 1];
+const getNextTurnPlayerId = (currentGameObject: GameResponse) => {
+  const { currentTurnPlayerId } = currentGameObject;
+  const currentTurnPlayerIdIndex =
+    currentGameObject.playerIds.indexOf(currentTurnPlayerId);
+  return currentTurnPlayerIdIndex === currentGameObject.playerIds.length - 1
+    ? currentGameObject.playerIds[0]
+    : currentGameObject.playerIds[currentTurnPlayerIdIndex + 1];
 };
 
-const saveCurrentTurnUserIdInGame = (): GameResponse => {
+const saveCurrentTurnPlayerIdInGame = (): GameResponse => {
   try {
     const currentGameObject = getCurrentGameObject();
-    const nextTurnUserId = getNextTurnUserId(currentGameObject);
+    const nextTurnPlayerId = getNextTurnPlayerId(currentGameObject);
     const newGameObject: GameResponse = {
       ...currentGameObject,
-      currentTurnUserId: nextTurnUserId,
+      currentTurnPlayerId: nextTurnPlayerId,
     };
     fs.writeFileSync(
       `${GAME_DB_PATH}/${GAME_DB_FILE}`,
@@ -146,7 +146,7 @@ const saveGameStart = () => {
     const newGameObject: GameResponse = {
       ...currentGameObject,
       hasStarted: true,
-      currentTurnUserId: currentGameObject.userIds[0],
+      currentTurnPlayerId: currentGameObject.playerIds[0],
       availableCards: getOriginalAvailableCards(),
     };
     fs.writeFileSync(
@@ -174,8 +174,8 @@ export default {
   savePublicNumberInGame,
   createNewGame,
   getCurrentGameObject,
-  getCurrentUserIds,
+  getCurrentPlayerIds,
   saveGameStart,
-  saveCurrentTurnUserIdInGame,
-  saveNewUserIdInGame,
+  saveCurrentTurnPlayerIdInGame,
+  saveNewPlayerIdInGame,
 };

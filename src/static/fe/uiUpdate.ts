@@ -9,17 +9,17 @@ const updateUiEntryRoom = (hasGameStarted) => {
   if (hasGameStarted) {
     updateUIWaitForGametoEnd();
   } else {
-    updateUICreateUser();
+    updateUICreatePlayer();
   }
 };
 
 const updateUIWaitForGametoEnd = () => {
-  document.getElementById("createUserButton").style.display = "none";
+  document.getElementById("createPlayerButton").style.display = "none";
   document.getElementById("waitingForGameToEnd").style.display = "block";
 };
 
-const updateUICreateUser = () => {
-  document.getElementById("createUserButton").style.display = "block";
+const updateUICreatePlayer = () => {
+  document.getElementById("createPlayerButton").style.display = "block";
   document.getElementById("waitingForGameToEnd").style.display = "none";
 };
 
@@ -29,7 +29,7 @@ const updateUiWaitingRoom = (numberOfPlayers) => {
   document.getElementById("gameRoom").style.display = "none";
   document.getElementById("entryRoom").style.display = "none";
 
-  updateUINumberOfUsers(numberOfPlayers);
+  updateUINumberOfPlayers(numberOfPlayers);
 
   if (numberOfPlayers >= MIN_NUMBER_OF_PLAYERS_FOR_GAME) {
     updateUIWithStartGame();
@@ -38,7 +38,7 @@ const updateUiWaitingRoom = (numberOfPlayers) => {
   }
 };
 
-const updateUINumberOfUsers = (numberOfPlayers) => {
+const updateUINumberOfPlayers = (numberOfPlayers) => {
   document.getElementById("numberOfPlayers").innerHTML = numberOfPlayers;
 };
 
@@ -53,39 +53,39 @@ const updateUIWaitForMorePlayers = () => {
 };
 
 // GAME ROOM
-const updateUIWithGameStart = (isUsersTurn: boolean) => {
+const updateUIWithGameStart = (isPlayersTurn: boolean) => {
   document.getElementById("waitingRoom").style.display = "none";
   document.getElementById("entryRoom").style.display = "none";
   document.getElementById("gameRoom").style.display = "block";
-  updateUITurn(isUsersTurn);
+  updateUITurn(isPlayersTurn);
 };
 
-const updateUITurn = (isUsersTurn: boolean) => {
-  if (isUsersTurn) {
-    document.getElementById("notUsersTurn").style.display = "none";
-    document.getElementById("usersTurn").style.display = "block";
+const updateUITurn = (isPlayersTurn: boolean) => {
+  if (isPlayersTurn) {
+    document.getElementById("notPlayersTurn").style.display = "none";
+    document.getElementById("playersTurn").style.display = "block";
     return;
   }
-  document.getElementById("notUsersTurn").style.display = "block";
-  document.getElementById("usersTurn").style.display = "none";
+  document.getElementById("notPlayersTurn").style.display = "block";
+  document.getElementById("playersTurn").style.display = "none";
 };
 
 export const updateUI = ({
   hasGameStarted,
   isItYourTurn,
-  userId,
+  playerId,
   numberOfPlayers,
 }: {
   hasGameStarted: boolean;
   isItYourTurn: boolean;
   numberOfPlayers: number;
-  userId?: number;
+  playerId?: number;
 }) => {
-  if (userId && hasGameStarted) {
+  if (playerId && hasGameStarted) {
     updateUIWithGameStart(isItYourTurn);
-  } else if (userId && !hasGameStarted) {
+  } else if (playerId && !hasGameStarted) {
     updateUiWaitingRoom(numberOfPlayers);
-  } else if (!userId) {
+  } else if (!playerId) {
     updateUiEntryRoom(hasGameStarted);
   }
 };

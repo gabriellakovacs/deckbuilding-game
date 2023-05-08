@@ -2,7 +2,7 @@ import * as http from "http";
 import * as fs from "fs";
 import { WebSocketServer } from "ws";
 import Game from "./controllers/gameController.js";
-import User from "./controllers/userController.js";
+import Player from "./controllers/playerController.js";
 import Paths from "./static/paths.js";
 
 const PORT = process.env.PORT || 5000;
@@ -19,7 +19,7 @@ const server = http.createServer(async (req, res) => {
   // HOME HTML
   if (
     (req.url === "/" && req.method === "GET") ||
-    (req.url.match(/\/\?userId\=([0-9]+)/) && req.method === "GET")
+    (req.url.match(/\/\?playerId\=([0-9]+)/) && req.method === "GET")
   ) {
     try {
       const homeHtml = fs.readFileSync(Paths.INDEX_HTML_PATH, "utf8");
@@ -71,29 +71,29 @@ const server = http.createServer(async (req, res) => {
     Game.getGame(req, res);
   } else if (req.url === Paths.API_GAME && req.method === "DELETE") {
     Game.deleteGame(req, res);
-  } else if (req.url === Paths.API_CREATE_USER && req.method === "POST") {
-    await Game.createUser(req, res, webSocketServer);
+  } else if (req.url === Paths.API_CREATE_PLAYER && req.method === "POST") {
+    await Game.createPlayer(req, res, webSocketServer);
   } else if (req.url === Paths.API_PUBLIC_NUMBER && req.method === "GET") {
     Game.getPublicNumber(req, res);
   } else if (
     req.url.match(Paths.API_PRIVATE_NUMBER_REGEX) &&
     req.method === "GET"
   ) {
-    User.getPrivateNumber(req, res);
+    Player.getPrivateNumber(req, res);
   } else if (req.url === Paths.API_PUBLIC_NUMBER && req.method === "POST") {
     Game.createNewPublicNumber(req, res, webSocketServer);
   } else if (
     req.url.match(Paths.API_PRIVATE_NUMBER_REGEX) &&
     req.method === "POST"
   ) {
-    User.createNewPrivateNumber(req, res);
+    Player.createNewPrivateNumber(req, res);
   } else if (req.url === Paths.API_PUBLIC_NUMBER && req.method === "PUT") {
     await Game.updatePublicNumber(req, res, webSocketServer);
   } else if (
     req.url.match(Paths.API_PRIVATE_NUMBER_REGEX) &&
     req.method === "PUT"
   ) {
-    await User.updatePrivateNumber(req, res);
+    await Player.updatePrivateNumber(req, res);
   } else if (req.url === Paths.API_START_GAME && req.method === "POST") {
     await Game.startGame(req, res, webSocketServer);
   } else if (req.url.match(Paths.API_END_TURN) && req.method === "POST") {

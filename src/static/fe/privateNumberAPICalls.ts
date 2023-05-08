@@ -2,7 +2,7 @@ import paths from "../paths.js";
 import {
   throwMissingPropError,
   updatePrivateNumber,
-  getUserIdFromCurrentUrl,
+  getPlayerIdFromCurrentUrl,
 } from "./helpers.js";
 
 type PrivateNumberResponse = {
@@ -17,9 +17,9 @@ const isPrivateNumberResponseType = (
   );
 };
 
-export const getPrivateNumber = async (userId: number) => {
+export const getPrivateNumber = async (playerId: number) => {
   const method = "GET";
-  const url = `${paths.BASE_URL}${paths.API_PRIVATE_NUMBER(userId)}`;
+  const url = `${paths.BASE_URL}${paths.API_PRIVATE_NUMBER(playerId)}`;
 
   try {
     const response = await fetch(url, { method });
@@ -42,8 +42,8 @@ export const getPrivateNumber = async (userId: number) => {
 
 export const handleGeneratePrivateNumber = async () => {
   const method = "POST";
-  const userId = getUserIdFromCurrentUrl();
-  const url = `${paths.BASE_URL}${paths.API_PRIVATE_NUMBER(userId)}`;
+  const playerId = getPlayerIdFromCurrentUrl();
+  const url = `${paths.BASE_URL}${paths.API_PRIVATE_NUMBER(playerId)}`;
 
   try {
     const response = await fetch(url, { method });
@@ -66,8 +66,8 @@ export const handleGeneratePrivateNumber = async () => {
 
 export const handleUpdatePrivateNumber = async () => {
   const method = "PUT";
-  const userId = getUserIdFromCurrentUrl();
-  const url = `${paths.BASE_URL}${paths.API_PRIVATE_NUMBER(userId)}`;
+  const playerId = getPlayerIdFromCurrentUrl();
+  const url = `${paths.BASE_URL}${paths.API_PRIVATE_NUMBER(playerId)}`;
   const privateNumberInput = document.getElementById(
     "privateNumberInput"
   ) as HTMLInputElement;

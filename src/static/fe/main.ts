@@ -9,7 +9,7 @@ import {
   handleUpdatePublicNumber,
 } from "./publicNumberAPICalls.js";
 import { updateUI } from "./uiUpdate.js";
-import { handleCreateNewUser } from "./userAPICalls.js";
+import { handleCreateNewPlayer } from "./playerAPICalls.js";
 
 const checkGameState = async () => {
   const game = await getGame();
@@ -31,8 +31,8 @@ document
   .querySelector("#updatePrivateNumberButton")
   .addEventListener("click", handleUpdatePrivateNumber);
 document
-  .querySelector("#createUserButton")
-  .addEventListener("click", handleCreateNewUser);
+  .querySelector("#createPlayerButton")
+  .addEventListener("click", handleCreateNewPlayer);
 document
   .querySelector("#startGameButton")
   .addEventListener("click", handleStartGame);

@@ -4,27 +4,27 @@ import { gameToUpdateUiInput, throwMissingPropError } from "./helpers.js";
 import { isGameResponseType, isGenericResponseType } from "./types.js";
 import { updateUI } from "./uiUpdate.js";
 
-type CreateNewUserResponse = {
+type CreateNewPlayerResponse = {
   game: GameResponse;
-  userId: number;
+  playerId: number;
 };
 
-const isCreateNewUserResponseType = (
+const isCreateNewplayerResponseType = (
   value: unknown
-): value is CreateNewUserResponse => {
+): value is CreateNewPlayerResponse => {
   return (
     typeof value === "object" &&
     value !== null &&
-    "userId" in value &&
-    typeof value.userId === "number" &&
+    "playerId" in value &&
+    typeof value.playerId === "number" &&
     "game" in value &&
     isGameResponseType(value.game)
   );
 };
 
-export const handleCreateNewUser = async () => {
+export const handleCreateNewPlayer = async () => {
   const method = "POST";
-  const url = `${paths.BASE_URL}${paths.API_CREATE_USER}`;
+  const url = `${paths.BASE_URL}${paths.API_CREATE_PLAYER}`;
 
   try {
     const response = await fetch(url, { method });
@@ -32,16 +32,21 @@ export const handleCreateNewUser = async () => {
 
     if (
       !isGenericResponseType(jsonResponse) ||
-      !isCreateNewUserResponseType(jsonResponse.data)
+      !isCreateNewplayerResponseType(jsonResponse.data)
     ) {
-      throwMissingPropError({ method, url, jsonResponse, propName: "userId" });
+      throwMissingPropError({
+        method,
+        url,
+        jsonResponse,
+        propName: "playerId",
+      });
       return;
     }
 
     window.history.replaceState(
       null,
       null,
-      `?userId=${jsonResponse.data?.userId}`
+      `?playerId=${jsonResponse.data?.playerId}`
     );
     updateUI(gameToUpdateUiInput(jsonResponse.data.game));
   } catch (error) {

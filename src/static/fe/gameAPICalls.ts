@@ -73,7 +73,7 @@ export const getGame = async (): Promise<GameResponse> => {
         method,
         url,
         jsonResponse,
-        propName: "userIds",
+        propName: "playerIds",
       });
       return;
     }

@@ -58,26 +58,26 @@ export const updatePrivateNumber = (newPrivateNumber) => {
   document.getElementById("privateNumber").innerHTML = newPrivateNumber;
 };
 
-export const getUserIdFromCurrentUrl = () => {
+export const getPlayerIdFromCurrentUrl = () => {
   const currentUrl = new URL(window.location.href);
   const searchParams = currentUrl.searchParams;
-  const userId = searchParams.get("userId");
-  return Number(userId);
+  const playerId = searchParams.get("playerId");
+  return Number(playerId);
 };
 
-export const isYourTurn = (userId, currentTurnUserId) => {
-  return currentTurnUserId === userId;
+export const isYourTurn = (playerId, currentTurnPlayerId) => {
+  return currentTurnPlayerId === playerId;
 };
 
 export const gameToUpdateUiInput = (game: GameResponse) => {
-  const userId = getUserIdFromCurrentUrl();
-  const numberOfPlayers = game.userIds.length;
-  const isItYourTurn = isYourTurn(userId, game.currentTurnUserId);
+  const playerId = getPlayerIdFromCurrentUrl();
+  const numberOfPlayers = game.playerIds.length;
+  const isItYourTurn = isYourTurn(playerId, game.currentTurnPlayerId);
 
   return {
     hasGameStarted: game.hasStarted,
     isItYourTurn,
-    userId,
+    playerId,
     numberOfPlayers,
   };
 };

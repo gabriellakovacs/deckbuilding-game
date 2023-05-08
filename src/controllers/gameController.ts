@@ -16,16 +16,16 @@ const deleteGame = (req, res) => {
   res.end(JSON.stringify({ success: true }));
 };
 
-const createUser = async (req, res, webSocketServer) => {
-  //TODO: max 4 users for now?
-  const { game, userId } = await gameModel.saveNewUserIdInGame();
+const createPlayer = async (req, res, webSocketServer) => {
+  //TODO: max 4 players for now?
+  const { game, playerId } = await gameModel.saveNewPlayerIdInGame();
 
   webSocketServer.clients.forEach((client) => {
     client.send(createWebSocketMessage(game));
   });
 
   res.writeHead(200, headerContentJson);
-  res.end(JSON.stringify({ success: true, data: { game, userId } }));
+  res.end(JSON.stringify({ success: true, data: { game, playerId } }));
 };
 
 const getPublicNumber = (req, res) => {
@@ -86,7 +86,7 @@ const startGame = (req, res, webSocketServer) => {
 };
 
 const endTurn = (req, res, webSocketServer) => {
-  const game = gameModel.saveCurrentTurnUserIdInGame();
+  const game = gameModel.saveCurrentTurnPlayerIdInGame();
 
   webSocketServer.clients.forEach((client) => {
     client.send(createWebSocketMessage(game));
@@ -112,5 +112,5 @@ export default {
   startGame,
   endTurn,
   getGame,
-  createUser,
+  createPlayer,
 };

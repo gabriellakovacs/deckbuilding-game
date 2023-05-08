@@ -8,12 +8,13 @@ export const STATIC_FE_FILES_PATH = "./public/static/fe";
 export const API_GAME = "/api/game";
 export const API_START_GAME = "/api/game/start";
 export const API_END_TURN = `/api/game/end-turn`;
-export const API_CREATE_USER = "/api/game/create-user";
+export const API_CREATE_PLAYER = "/api/game/create-player";
 
 export const API_PUBLIC_NUMBER = "/api/public-number";
-export const API_PRIVATE_NUMBER = (userId) =>
-  `/api/user/${userId}/private-number`;
-export const API_PRIVATE_NUMBER_REGEX = /\/api\/user\/([0-9]+)\/private-number/;
+export const API_PRIVATE_NUMBER = (playerId) =>
+  `/api/player/${playerId}/private-number`;
+export const API_PRIVATE_NUMBER_REGEX =
+  /\/api\/player\/([0-9]+)\/private-number/;
 
 export default {
   BASE_URL,
@@ -23,7 +24,7 @@ export default {
   STATIC_FE_FILES_PATH,
   API_GAME,
   API_PUBLIC_NUMBER,
-  API_CREATE_USER,
+  API_CREATE_PLAYER,
   API_PRIVATE_NUMBER,
   API_PRIVATE_NUMBER_REGEX,
   API_START_GAME,

@@ -6,8 +6,8 @@ export const isGameResponseType = (value: unknown): value is GameResponse => {
     value !== null &&
     "hasStarted" in value &&
     typeof value.hasStarted === "boolean" &&
-    "userIds" in value &&
-    Array.isArray(value.userIds)
+    "playerIds" in value &&
+    Array.isArray(value.playerIds)
   );
 };
 
