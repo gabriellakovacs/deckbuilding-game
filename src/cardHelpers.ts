@@ -1,3 +1,5 @@
+import { PlayerResponse } from "./static/types";
+
 export const getOriginalAvailableCards = () => {
   return {
     treasure: [
@@ -39,4 +41,32 @@ export const getOriginalAvailableCards = () => {
       },
     ],
   };
+};
+
+export const getInitialDrawPile = (): PlayerResponse => {
+  return {
+    drawPile: shuffleArray([
+      { name: "copper" },
+      { name: "copper" },
+      { name: "copper" },
+      { name: "copper" },
+      { name: "copper" },
+      { name: "copper" },
+      { name: "copper" },
+      { name: "estate" },
+      { name: "estate" },
+      { name: "estate" },
+    ]),
+  };
+};
+
+export const shuffleArray = <T>(array: T[]): T[] => {
+  const arrayCopy = array.slice(0);
+  for (var i = arrayCopy.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = arrayCopy[i];
+    arrayCopy[i] = arrayCopy[j];
+    arrayCopy[j] = temp;
+  }
+  return arrayCopy;
 };

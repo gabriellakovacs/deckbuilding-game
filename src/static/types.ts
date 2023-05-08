@@ -17,6 +17,14 @@ export type GameResponse = {
   availableCards?: CardListInGame;
 };
 
+type CardInPlayer = {
+  name: string;
+};
+
+export type PlayerResponse = {
+  drawPile: CardInPlayer[];
+};
+
 export type WebSocketMessage =
   | {
       type: "game";
@@ -24,7 +32,7 @@ export type WebSocketMessage =
     }
   | {
       type: "player";
-      player: {};
+      player: PlayerResponse;
     }
   | {
       type: "publicNumber";

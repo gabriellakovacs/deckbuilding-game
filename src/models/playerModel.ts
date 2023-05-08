@@ -1,5 +1,7 @@
 import * as fs from "fs";
 import { GAME_DB_PATH } from "../static/paths.js";
+import { getInitialDrawPile } from "../cardHelpers.js";
+import { PlayerResponse } from "../static/types.js";
 
 type Player = {
   privateNumber?: number;
@@ -62,8 +64,22 @@ const getPrivateNumberFromPlayer = (playerId: number) => {
   }
 };
 
+const saveInitialDrawPileInPlayer = (playerId: number): PlayerResponse => {
+  const initialDrawPile = getInitialDrawPile();
+  try {
+    fs.writeFileSync(
+      `${GAME_DB_PATH}/player_${playerId}.json`,
+      JSON.stringify(initialDrawPile)
+    );
+    return initialDrawPile;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 export default {
   createNewPlayerFile,
   savePrivateNumberInPlayer,
   getPrivateNumberFromPlayer,
+  saveInitialDrawPileInPlayer,
 };

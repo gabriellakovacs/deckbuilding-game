@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import playerModel from "./playerModel.js";
 import { GAME_DB_PATH } from "../static/paths.js";
-import { GameResponse } from "../static/types.js";
+import { GameResponse, PlayerResponse } from "../static/types.js";
 import { getOriginalAvailableCards } from "../cardHelpers.js";
 
 const GAME_DB_FILE = "game.json";
@@ -140,7 +140,10 @@ const saveCurrentTurnPlayerIdInGame = (): GameResponse => {
   }
 };
 
-const saveGameStart = () => {
+const saveGameStart = (): {
+  game: GameResponse;
+  players: { playerId: number; player: PlayerResponse }[];
+} => {
   try {
     const currentGameObject = getCurrentGameObject();
     const newGameObject: GameResponse = {
@@ -153,7 +156,13 @@ const saveGameStart = () => {
       `${GAME_DB_PATH}/${GAME_DB_FILE}`,
       JSON.stringify(newGameObject)
     );
-    return newGameObject;
+    const players: { playerId: number; player: PlayerResponse }[] = [];
+    newGameObject.playerIds.forEach((playerId) => {
+      const player = playerModel.saveInitialDrawPileInPlayer(playerId);
+      players.push({ playerId, player });
+    });
+
+    return { game: newGameObject, players };
   } catch (error) {
     throw new Error(error);
   }
