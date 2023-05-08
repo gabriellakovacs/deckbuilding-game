@@ -7,11 +7,15 @@ const headerContentJson = {
 };
 
 const isValidUserId = (userId: unknown) => {
-  if (typeof userId !== "number") {
+  if (
+    userId === null ||
+    userId === undefined ||
+    typeof Number(userId) !== "number"
+  ) {
     return false;
   }
   const existingUserIds = getCurrentUserIds();
-  return existingUserIds.includes(userId);
+  return existingUserIds.includes(Number(userId));
 };
 
 const resWrongUserID = (res, userId) => {
@@ -22,14 +26,6 @@ const resWrongUserID = (res, userId) => {
       message: `Id: ${userId} does not exist`,
     })
   );
-};
-
-const createUser = async (req, res) => {
-  //TODO: max 4 users for now?
-  const userId = await userModel.createNewUserFile();
-
-  res.writeHead(200, headerContentJson);
-  res.end(JSON.stringify({ userId }));
 };
 
 const getPrivateNumber = (req, res) => {
@@ -89,7 +85,6 @@ const updatePrivateNumber = async (req, res) => {
 };
 
 export default {
-  createUser,
   getPrivateNumber,
   createNewPrivateNumber,
   updatePrivateNumber,

@@ -1,28 +1,22 @@
-import { getUserIdFromCurrentUrl, updateUIWithUser } from "./helpers.js";
+import { getGame, handleEndOfTurn, handleStartGame } from "./gameAPICalls.js";
+import { gameToUpdateUiInput } from "./helpers.js";
 import {
-  getPublicNumber,
-  handleGeneratePublicNumber,
-  handleUpdatePublicNumber,
-} from "./publicNumberAPICalls.js";
-import {
-  getPrivateNumber,
   handleGeneratePrivateNumber,
   handleUpdatePrivateNumber,
 } from "./privateNumberAPICalls.js";
+import {
+  handleGeneratePublicNumber,
+  handleUpdatePublicNumber,
+} from "./publicNumberAPICalls.js";
+import { updateUI } from "./uiUpdate.js";
 import { handleCreateNewUser } from "./userAPICalls.js";
 
-export const checkForExistingUserIdAndGeneratedNumbers = async () => {
-  const userId = Number(getUserIdFromCurrentUrl());
-
-  if (userId) {
-    updateUIWithUser();
-    await getPrivateNumber(userId);
-  }
-
-  await getPublicNumber();
+const checkGameState = async () => {
+  const game = await getGame();
+  updateUI(gameToUpdateUiInput(game));
 };
 
-checkForExistingUserIdAndGeneratedNumbers();
+checkGameState();
 
 document
   .querySelector("#generatePublicNumberButton")
@@ -31,11 +25,17 @@ document
   .querySelector("#updatePublicNumberButton")
   .addEventListener("click", handleUpdatePublicNumber);
 document
-  .querySelector("#createUserButton")
-  .addEventListener("click", handleCreateNewUser);
-document
   .querySelector("#generatePrivateNumberButton")
   .addEventListener("click", handleGeneratePrivateNumber);
 document
   .querySelector("#updatePrivateNumberButton")
   .addEventListener("click", handleUpdatePrivateNumber);
+document
+  .querySelector("#createUserButton")
+  .addEventListener("click", handleCreateNewUser);
+document
+  .querySelector("#startGameButton")
+  .addEventListener("click", handleStartGame);
+document
+  .querySelector("#endOfTurnButton")
+  .addEventListener("click", handleEndOfTurn);

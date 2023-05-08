@@ -1,3 +1,4 @@
+import { createWebSocketMessage } from "../helpers.js";
 import gameModel from "../models/gameModel.js";
 import { getReqData } from "../utils.js";
 
@@ -5,10 +6,26 @@ const headerContentJson = {
   "Content-Type": "application/json",
 };
 
+const createNewGame = () => {
+  gameModel.createNewGame();
+};
+
 const deleteGame = (req, res) => {
   gameModel.deleteGame();
   res.writeHead(200, headerContentJson);
   res.end(JSON.stringify({ success: true }));
+};
+
+const createUser = async (req, res, webSocketServer) => {
+  //TODO: max 4 users for now?
+  const { game, userId } = await gameModel.saveNewUserIdInGame();
+
+  webSocketServer.clients.forEach((client) => {
+    client.send(createWebSocketMessage(game));
+  });
+
+  res.writeHead(200, headerContentJson);
+  res.end(JSON.stringify({ success: true, data: { game, userId } }));
 };
 
 const getPublicNumber = (req, res) => {
@@ -23,7 +40,7 @@ const createNewPublicNumber = (req, res, webSocketServer) => {
   gameModel.savePublicNumberInGame(publicNumber);
 
   webSocketServer.clients.forEach((client) => {
-    client.send(JSON.stringify({ publicNumber }));
+    client.send(JSON.stringify({ type: "publicNumber", publicNumber }));
   });
 
   res.writeHead(200, headerContentJson);
@@ -40,7 +57,7 @@ const updatePublicNumber = async (req, res, webSocketServer) => {
     gameModel.savePublicNumberInGame(publicNumber);
 
     webSocketServer.clients.forEach((client) => {
-      client.send(JSON.stringify({ publicNumber }));
+      client.send(JSON.stringify({ type: "publicNumber", publicNumber }));
     });
 
     res.writeHead(200, headerContentJson);
@@ -57,8 +74,33 @@ const updatePublicNumber = async (req, res, webSocketServer) => {
   );
 };
 
-const createNewGame = () => {
-  gameModel.createNewGame();
+const startGame = (req, res, webSocketServer) => {
+  const game = gameModel.saveGameStart();
+
+  webSocketServer.clients.forEach((client) => {
+    client.send(createWebSocketMessage(game));
+  });
+
+  res.writeHead(200, headerContentJson);
+  res.end(JSON.stringify({ success: true, data: game }));
+};
+
+const endTurn = (req, res, webSocketServer) => {
+  const game = gameModel.saveCurrentTurnUserIdInGame();
+
+  webSocketServer.clients.forEach((client) => {
+    client.send(createWebSocketMessage(game));
+  });
+
+  res.writeHead(200, headerContentJson);
+  res.end(JSON.stringify({ success: true, data: game }));
+};
+
+const getGame = (req, res) => {
+  const game = gameModel.getCurrentGameObject();
+
+  res.writeHead(200, headerContentJson);
+  res.end(JSON.stringify({ success: true, data: game }));
 };
 
 export default {
@@ -67,4 +109,8 @@ export default {
   createNewPublicNumber,
   updatePublicNumber,
   createNewGame,
+  startGame,
+  endTurn,
+  getGame,
+  createUser,
 };

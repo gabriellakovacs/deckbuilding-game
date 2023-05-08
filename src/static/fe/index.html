@@ -1,5 +1,36 @@
 <!Doctype html>
   <body>
+    <!-- ENTRY ROOM -->
+    <div id="entryRoom">
+      <h2>WELCOME</h2>
+      <div id="waitingForGameToEnd" >
+        <p>there is a game currently going on. please wait until it ends.</p>
+      </div>
+      <button id="createUserButton" >
+        create new user
+      </button>
+    </div>
+
+    <!-- WAITING ROOM -->
+    <div id="waitingRoom" style="display: none">
+      <h2>Waiting room</h2>
+
+      <p>There are currently: <span id="numberOfPlayers">o</span> players in this room.</p>
+
+      <div id="waitingForMorePlayers" >waiting for other players to join...</div>
+
+      <button id="startGameButton" >start game</button>
+    </div>
+   
+    <!-- GAME ROOM -->
+    <div id="gameRoom" style="display: none">
+      <h2>Game on</h2>
+      <div id="usersTurn">
+        your turn
+        <button id="endOfTurnButton">end of turn</button>
+      </div>
+      <div id="notUsersTurn">waiting for other player's turn to end</div>
+
     <!-- PUBLIC NUMBER START -->
     <div>- - - - - -</div>
     <h2>public number</h2>
@@ -10,13 +41,11 @@
     </button>
     <div>- - - - - -</div>
     <input type="number" id="publicNumberInput" />
-    <button id="updatePublicNumberButton">save</button>
+    <button id="updatePublicNumberButton">save</button> 
     <div>- - - - - -</div>
     <!-- PUBLIC NUMBER END -->
 
-    <button id="createUserButton">
-      create new user
-    </button>
+    
 
     <!-- PRIVATE NUMBER START -->
     <div id="privateNumberSection" style="display: none">
@@ -32,6 +61,8 @@
       <div>- - - - - -</div>
     </div>
     <!-- PRIVATE NUMBER END -->
+
+    </div>
 
   <script src="/public/static/fe/main.js" type="module"></script>
   

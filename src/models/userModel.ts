@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import { GAME_DB_PATH } from "../static/paths.js";
-import gameHelpers from "./gameModel.js";
 
 type User = {
   privateNumber?: number;
@@ -25,37 +24,7 @@ const getUserObjectById = (userId): User => {
   }
 };
 
-const getNextUserId = () => {
-  const existingUserIds = gameHelpers.getCurrentUserIds();
-  if (!existingUserIds) {
-    return 1;
-  }
-  return existingUserIds.length + 1;
-};
-
-const saveNewUserIdInGame = () => {
-  const currentGame = gameHelpers.getCurrentGameObject();
-  const nextUserId = getNextUserId();
-
-  try {
-    fs.writeFileSync(
-      `${GAME_DB_PATH}/game.json`,
-      JSON.stringify({
-        ...currentGame,
-        userIds: currentGame.userIds
-          ? [...currentGame.userIds, nextUserId]
-          : [nextUserId],
-      })
-    );
-    return nextUserId;
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
-const createNewUserFile = () => {
-  const nextUserId = saveNewUserIdInGame();
-
+const createNewUserFile = (nextUserId: number) => {
   try {
     fs.writeFileSync(`${GAME_DB_PATH}/user_${nextUserId}.json`, "");
     return nextUserId;

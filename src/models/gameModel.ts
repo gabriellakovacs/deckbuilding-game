@@ -1,12 +1,11 @@
 import * as fs from "fs";
+import userModel from "./userModel.js";
 import { GAME_DB_PATH } from "../static/paths.js";
+import { GameResponse } from "../static/types.js";
 
-type Game = {
-  publicNumber?: number;
-  userIds?: number[];
-};
+const GAME_DB_FILE = "game.json";
 
-const isGameType = (value: unknown): value is Game => {
+const isGameType = (value: unknown): value is GameResponse => {
   return (
     typeof value === "object" && value !== null
     // && "publicNumber" in value &&
@@ -18,9 +17,12 @@ const isGameType = (value: unknown): value is Game => {
   );
 };
 
-const getCurrentGameObject = (): Game => {
+export const getCurrentGameObject = (): GameResponse => {
   try {
-    const currentGame = fs.readFileSync(`${GAME_DB_PATH}/game.json`, "utf8");
+    const currentGame = fs.readFileSync(
+      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
+      "utf8"
+    );
     const currentGameJson =
       currentGame[0] === "{" ? JSON.parse(currentGame) : {};
     if (!isGameType(currentGameJson)) {
@@ -40,11 +42,18 @@ export const getCurrentUserIds = (): number[] => {
 };
 
 const createNewGame = () => {
+  const newGameObject: GameResponse = {
+    hasStarted: false,
+    userIds: [],
+  };
   try {
     if (!fs.existsSync(GAME_DB_PATH)) {
       fs.mkdirSync(GAME_DB_PATH);
     }
-    fs.writeFileSync(`${GAME_DB_PATH}/game.json`, "");
+    fs.writeFileSync(
+      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
+      JSON.stringify(newGameObject)
+    );
   } catch (error) {
     throw new Error(error);
   }
@@ -58,13 +67,91 @@ const deleteGame = () => {
   }
 };
 
+const getNextUserId = () => {
+  const existingUserIds = getCurrentUserIds();
+  if (!existingUserIds) {
+    return 1;
+  }
+  return existingUserIds.length + 1;
+};
+
+const saveNewUserIdInGame = () => {
+  const currentGame = getCurrentGameObject();
+  const nextUserId = getNextUserId();
+  userModel.createNewUserFile(nextUserId);
+  const newGameObject: GameResponse = {
+    ...currentGame,
+    userIds: currentGame.userIds
+      ? [...currentGame.userIds, nextUserId]
+      : [nextUserId],
+  };
+  try {
+    fs.writeFileSync(
+      `${GAME_DB_PATH}/game.json`,
+      JSON.stringify(newGameObject)
+    );
+    return { game: newGameObject, userId: nextUserId };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const savePublicNumberInGame = (publicNumber: number) => {
   try {
     const currentGameObject = getCurrentGameObject();
+    const newGameObject: GameResponse = {
+      ...currentGameObject,
+      publicNumber,
+    };
     fs.writeFileSync(
-      `${GAME_DB_PATH}/game.json`,
-      JSON.stringify({ ...currentGameObject, publicNumber })
+      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
+      JSON.stringify(newGameObject)
     );
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const getNextTurnUserId = (currentGameObject: GameResponse) => {
+  const { currentTurnUserId } = currentGameObject;
+  const currentTurnUserIdIndex =
+    currentGameObject.userIds.indexOf(currentTurnUserId);
+  return currentTurnUserIdIndex === currentGameObject.userIds.length - 1
+    ? currentGameObject.userIds[0]
+    : currentGameObject.userIds[currentTurnUserIdIndex + 1];
+};
+
+const saveCurrentTurnUserIdInGame = (): GameResponse => {
+  try {
+    const currentGameObject = getCurrentGameObject();
+    const nextTurnUserId = getNextTurnUserId(currentGameObject);
+    const newGameObject: GameResponse = {
+      ...currentGameObject,
+      currentTurnUserId: nextTurnUserId,
+    };
+    fs.writeFileSync(
+      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
+      JSON.stringify(newGameObject)
+    );
+    return newGameObject;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const saveGameStart = () => {
+  try {
+    const currentGameObject = getCurrentGameObject();
+    const newGameObject: GameResponse = {
+      ...currentGameObject,
+      hasStarted: true,
+      currentTurnUserId: currentGameObject.userIds[0],
+    };
+    fs.writeFileSync(
+      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
+      JSON.stringify(newGameObject)
+    );
+    return newGameObject;
   } catch (error) {
     throw new Error(error);
   }
@@ -86,4 +173,7 @@ export default {
   createNewGame,
   getCurrentGameObject,
   getCurrentUserIds,
+  saveGameStart,
+  saveCurrentTurnUserIdInGame,
+  saveNewUserIdInGame,
 };
