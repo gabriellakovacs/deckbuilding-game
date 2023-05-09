@@ -1,12 +1,6 @@
-type CardInGame = {
+export type CardInGame = {
   name: string;
   nrOfCards: number;
-};
-
-type CardListInGame = {
-  treasure: CardInGame[];
-  victoryPoint: CardInGame[];
-  action: CardInGame[];
 };
 
 export type GameResponse = {
@@ -14,15 +8,18 @@ export type GameResponse = {
   playerIds: number[];
   currentTurnPlayerId?: number;
   publicNumber?: number;
-  availableCards?: CardListInGame;
+  availableCards?: CardInGame[];
 };
 
-type CardInPlayer = {
+export type CardInPlayer = {
   name: string;
 };
 
 export type PlayerResponse = {
   drawPile: CardInPlayer[];
+  throwPile: CardInPlayer[];
+  hand: CardInPlayer[];
+  privateNumber?: number;
 };
 
 export type WebSocketMessage =

@@ -1,63 +1,47 @@
-import { PlayerResponse } from "./static/types";
+import { CardInGame, PlayerResponse } from "./static/types";
 
-export const getOriginalAvailableCards = () => {
-  return {
-    treasure: [
-      {
-        name: "gold",
-        nrOfCards: 12,
-      },
-      {
-        name: "copper",
-        nrOfCards: 12,
-      },
-      {
-        name: "silver",
-        nrOfCards: 12,
-      },
-    ],
-    victoryPoint: [
-      {
-        name: "low",
-        nrOfCards: 12,
-      },
-      {
-        name: "medium",
-        nrOfCards: 12,
-      },
-      {
-        name: "high",
-        nrOfCards: 12,
-      },
-    ],
-    action: [
-      {
-        name: "action_1",
-        nrOfCards: 12,
-      },
-      {
-        name: "action_2",
-        nrOfCards: 12,
-      },
-    ],
-  };
+export const getInitialDeckForGame = (): Array<CardInGame> => {
+  return [
+    {
+      name: "gold",
+      nrOfCards: 20,
+    },
+    {
+      name: "copper",
+      nrOfCards: 20,
+    },
+    {
+      name: "silver",
+      nrOfCards: 20,
+    },
+    {
+      name: "estate",
+      nrOfCards: 20,
+    },
+    {
+      name: "duchy",
+      nrOfCards: 20,
+    },
+    {
+      name: "province",
+      nrOfCards: 20,
+    },
+    {
+      name: "action_1",
+      nrOfCards: 20,
+    },
+    {
+      name: "action_2",
+      nrOfCards: 20,
+    },
+  ];
 };
 
-export const getInitialDrawPile = (): PlayerResponse => {
-  return {
-    drawPile: shuffleArray([
-      { name: "copper" },
-      { name: "copper" },
-      { name: "copper" },
-      { name: "copper" },
-      { name: "copper" },
-      { name: "copper" },
-      { name: "copper" },
-      { name: "estate" },
-      { name: "estate" },
-      { name: "estate" },
-    ]),
-  };
+export const getInitialDeckForPlayer = (): Array<CardInGame> => {
+  return [
+    { name: "copper", nrOfCards: 7 },
+    { name: "estate", nrOfCards: 3 },
+  ];
 };
 
 export const shuffleArray = <T>(array: T[]): T[] => {

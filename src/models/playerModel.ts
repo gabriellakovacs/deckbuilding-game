@@ -1,17 +1,39 @@
 import * as fs from "fs";
 import { GAME_DB_PATH } from "../static/paths.js";
-import { getInitialDrawPile } from "../cardHelpers.js";
-import { PlayerResponse } from "../static/types.js";
+import { CardInGame, CardInPlayer, PlayerResponse } from "../static/types.js";
 
-type Player = {
-  privateNumber?: number;
+const isCardInPlayerType = (value: unknown): value is PlayerResponse => {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "name" in value &&
+    typeof value.name === "string"
+  );
 };
 
-const isPlayerType = (value: unknown): value is Player => {
-  return typeof value === "object" && value !== null;
+const isPlayerType = (value: unknown): value is PlayerResponse => {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "throwPile" in value &&
+    Array.isArray(value.throwPile) &&
+    value.throwPile.reduce(
+      (acc, card) => acc && isCardInPlayerType(card),
+      true
+    ) &&
+    "drawPile" in value &&
+    Array.isArray(value.drawPile) &&
+    value.drawPile.reduce(
+      (acc, card) => acc && isCardInPlayerType(card),
+      true
+    ) &&
+    "hand" in value &&
+    Array.isArray(value.hand) &&
+    value.hand.reduce((acc, card) => acc && isCardInPlayerType(card), true)
+  );
 };
 
-const getPlayerObjectById = (playerId): Player => {
+const getPlayerObjectById = (playerId): PlayerResponse => {
   try {
     const player = fs.readFileSync(
       `${GAME_DB_PATH}/player_${playerId}.json`,
@@ -30,8 +52,16 @@ const getPlayerObjectById = (playerId): Player => {
 };
 
 const createNewPlayerFile = (nextPlayerId: number) => {
+  const newPlayerObject: PlayerResponse = {
+    drawPile: [],
+    throwPile: [],
+    hand: [],
+  };
   try {
-    fs.writeFileSync(`${GAME_DB_PATH}/player_${nextPlayerId}.json`, "");
+    fs.writeFileSync(
+      `${GAME_DB_PATH}/player_${nextPlayerId}.json`,
+      JSON.stringify(newPlayerObject)
+    );
     return nextPlayerId;
   } catch (error) {
     throw new Error(error);
@@ -64,14 +94,35 @@ const getPrivateNumberFromPlayer = (playerId: number) => {
   }
 };
 
-const saveInitialDrawPileInPlayer = (playerId: number): PlayerResponse => {
-  const initialDrawPile = getInitialDrawPile();
+const cardInGameToCardInPlayer = (
+  cards: Array<CardInGame>
+): Array<CardInPlayer> => {
+  const cardsInPlayer = [];
+  cards.forEach((card) => {
+    for (let i = 0; i < card.nrOfCards; i++) {
+      cardsInPlayer.push({ name: card.name });
+    }
+  });
+  return cardsInPlayer;
+};
+
+const saveCardsInPlayer = (
+  cards: Array<CardInGame>,
+  location: "drawPile" | "throwPile" | "hand",
+  playerId: number
+) => {
+  const cardsToBeSaved = cardInGameToCardInPlayer(cards);
+  const currentPlayerObject = getPlayerObjectById(playerId);
+  const newPlayerobject = {
+    ...currentPlayerObject,
+    [location]: [...currentPlayerObject[location], ...cardsToBeSaved],
+  };
   try {
     fs.writeFileSync(
       `${GAME_DB_PATH}/player_${playerId}.json`,
-      JSON.stringify(initialDrawPile)
+      JSON.stringify(newPlayerobject)
     );
-    return initialDrawPile;
+    return newPlayerobject;
   } catch (error) {
     throw new Error(error);
   }
@@ -81,5 +132,5 @@ export default {
   createNewPlayerFile,
   savePrivateNumberInPlayer,
   getPrivateNumberFromPlayer,
-  saveInitialDrawPileInPlayer,
+  saveCardsInPlayer,
 };

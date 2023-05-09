@@ -1,8 +1,12 @@
+import type { CardInGame } from "./../static/types";
 import * as fs from "fs";
 import playerModel from "./playerModel.js";
 import { GAME_DB_PATH } from "../static/paths.js";
 import { GameResponse, PlayerResponse } from "../static/types.js";
-import { getOriginalAvailableCards } from "../cardHelpers.js";
+import {
+  getInitialDeckForPlayer,
+  getInitialDeckForGame,
+} from "../cardHelpers.js";
 
 const GAME_DB_FILE = "game.json";
 
@@ -113,6 +117,15 @@ const savePublicNumberInGame = (publicNumber: number) => {
   }
 };
 
+const getPublicNumberFromGame = (): number | null => {
+  try {
+    const currentGameObject = getCurrentGameObject();
+    return currentGameObject?.publicNumber || null;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const getNextTurnPlayerId = (currentGameObject: GameResponse) => {
   const { currentTurnPlayerId } = currentGameObject;
   const currentTurnPlayerIdIndex =
@@ -150,15 +163,24 @@ const saveGameStart = (): {
       ...currentGameObject,
       hasStarted: true,
       currentTurnPlayerId: currentGameObject.playerIds[0],
-      availableCards: getOriginalAvailableCards(),
+      availableCards: getInitialDeckForGame(),
     };
+
     fs.writeFileSync(
       `${GAME_DB_PATH}/${GAME_DB_FILE}`,
       JSON.stringify(newGameObject)
     );
+
+    const initialDeckForPlayer = getInitialDeckForPlayer();
+
     const players: { playerId: number; player: PlayerResponse }[] = [];
+
     newGameObject.playerIds.forEach((playerId) => {
-      const player = playerModel.saveInitialDrawPileInPlayer(playerId);
+      const { player } = moveCardsFromGameToPlayer(
+        initialDeckForPlayer,
+        playerId,
+        "throwPile"
+      );
       players.push({ playerId, player });
     });
 
@@ -168,13 +190,44 @@ const saveGameStart = (): {
   }
 };
 
-const getPublicNumberFromGame = (): number | null => {
+const removeCardsFromGameObject = (
+  cards: Array<CardInGame>,
+  currentGameObject: GameResponse
+) => {
+  cards.forEach((card) => {
+    currentGameObject.availableCards.every((availableCard) => {
+      if (availableCard.name === card.name) {
+        availableCard.nrOfCards = availableCard.nrOfCards - card.nrOfCards;
+        return false;
+      }
+      return true;
+    });
+  });
+  return currentGameObject;
+};
+
+const removeCardsFromGameDb = (cards: Array<CardInGame>) => {
+  const currentGameObject = getCurrentGameObject();
+  removeCardsFromGameObject(cards, currentGameObject);
   try {
-    const currentGameObject = getCurrentGameObject();
-    return currentGameObject?.publicNumber || null;
+    fs.writeFileSync(
+      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
+      JSON.stringify(currentGameObject)
+    );
+    return currentGameObject;
   } catch (error) {
     throw new Error(error);
   }
+};
+
+export const moveCardsFromGameToPlayer = (
+  cards: Array<CardInGame>,
+  playerId: number,
+  location: "drawPile" | "throwPile" | "hand"
+) => {
+  const game = removeCardsFromGameDb(cards);
+  const player = playerModel.saveCardsInPlayer(cards, location, playerId);
+  return { game, player };
 };
 
 export default {
