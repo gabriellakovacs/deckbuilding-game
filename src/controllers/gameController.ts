@@ -10,7 +10,14 @@ const headerContentJson = {
 };
 
 const createNewGame = () => {
-  gameModel.createNewGame();
+  gameModel.createNewGameFile();
+};
+
+const getGame = (req, res) => {
+  const game = gameModel.getCurrentGameObject();
+
+  res.writeHead(200, headerContentJson);
+  res.end(JSON.stringify({ success: true, data: game }));
 };
 
 const deleteGame = (req, res) => {
@@ -19,7 +26,23 @@ const deleteGame = (req, res) => {
   res.end(JSON.stringify({ success: true }));
 };
 
-const createPlayer = async (req, res, webSocketServer) => {
+const startGame = (req, res, webSocketServer) => {
+  const { game, players } = gameModel.saveGameStart();
+
+  webSocketServer.clients.forEach((client) => {
+    client.send(createWebSocketMessageGame(game));
+
+    //TODO: figure out how to send the plaayer's own hand to each player
+    players.forEach((player) => {
+      client.send(createWebSocketMessagePlayer(player.player));
+    });
+  });
+
+  res.writeHead(200, headerContentJson);
+  res.end(JSON.stringify({ success: true, data: game }));
+};
+
+const addPlayerToGame = async (req, res, webSocketServer) => {
   //TODO: max 4 players for now?
   const { game, playerId } = await gameModel.saveNewPlayerIdInGame();
 
@@ -29,6 +52,17 @@ const createPlayer = async (req, res, webSocketServer) => {
 
   res.writeHead(200, headerContentJson);
   res.end(JSON.stringify({ success: true, data: { game, playerId } }));
+};
+
+const endTurn = (req, res, webSocketServer) => {
+  const game = gameModel.saveCurrentTurnPlayerIdInGame();
+
+  webSocketServer.clients.forEach((client) => {
+    client.send(createWebSocketMessageGame(game));
+  });
+
+  res.writeHead(200, headerContentJson);
+  res.end(JSON.stringify({ success: true, data: game }));
 };
 
 const getPublicNumber = (req, res) => {
@@ -77,40 +111,6 @@ const updatePublicNumber = async (req, res, webSocketServer) => {
   );
 };
 
-const startGame = (req, res, webSocketServer) => {
-  const { game, players } = gameModel.saveGameStart();
-
-  webSocketServer.clients.forEach((client) => {
-    client.send(createWebSocketMessageGame(game));
-
-    //TODO: figure out how to send the plaayer's own hand to each player
-    players.forEach((player) => {
-      client.send(createWebSocketMessagePlayer(player.player));
-    });
-  });
-
-  res.writeHead(200, headerContentJson);
-  res.end(JSON.stringify({ success: true, data: game }));
-};
-
-const endTurn = (req, res, webSocketServer) => {
-  const game = gameModel.saveCurrentTurnPlayerIdInGame();
-
-  webSocketServer.clients.forEach((client) => {
-    client.send(createWebSocketMessageGame(game));
-  });
-
-  res.writeHead(200, headerContentJson);
-  res.end(JSON.stringify({ success: true, data: game }));
-};
-
-const getGame = (req, res) => {
-  const game = gameModel.getCurrentGameObject();
-
-  res.writeHead(200, headerContentJson);
-  res.end(JSON.stringify({ success: true, data: game }));
-};
-
 export default {
   deleteGame,
   getPublicNumber,
@@ -120,5 +120,5 @@ export default {
   startGame,
   endTurn,
   getGame,
-  createPlayer,
+  addPlayerToGame,
 };

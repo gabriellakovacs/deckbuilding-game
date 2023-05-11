@@ -79,6 +79,18 @@ const getCardTypeFromName = (name: AllCardNames): CardType => {
   }
 };
 
+export const cardInGameToCardInPlayer = (
+  cards: Array<CardInGame>
+): Array<CardInPlayer> => {
+  const cardsInPlayer = [];
+  cards.forEach((card) => {
+    for (let i = 0; i < card.nrOfCards; i++) {
+      cardsInPlayer.push({ name: card.name });
+    }
+  });
+  return cardsInPlayer;
+};
+
 export const organizeCardsInHand = (
   cards: Array<CardInPlayer>
 ): Array<CardInPlayer> => {

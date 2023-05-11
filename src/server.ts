@@ -72,7 +72,7 @@ const server = http.createServer(async (req, res) => {
   } else if (req.url === Paths.API_GAME && req.method === "DELETE") {
     Game.deleteGame(req, res);
   } else if (req.url === Paths.API_CREATE_PLAYER && req.method === "POST") {
-    await Game.createPlayer(req, res, webSocketServer);
+    await Game.addPlayerToGame(req, res, webSocketServer);
   } else if (req.url === Paths.API_PUBLIC_NUMBER && req.method === "GET") {
     Game.getPublicNumber(req, res);
   } else if (

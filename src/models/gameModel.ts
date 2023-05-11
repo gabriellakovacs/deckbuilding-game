@@ -1,12 +1,12 @@
-import type { CardInGame } from "./../static/types";
 import * as fs from "fs";
-import playerModel from "./playerModel.js";
+import {
+  getInitialDeckForGame,
+  getInitialDeckForPlayer,
+} from "../cardHelpers.js";
 import { GAME_DB_PATH } from "../static/paths.js";
 import { GameResponse, PlayerResponse } from "../static/types.js";
-import {
-  getInitialDeckForPlayer,
-  getInitialDeckForGame,
-} from "../cardHelpers.js";
+import type { CardInGame } from "./../static/types";
+import playerModel from "./playerModel.js";
 
 const GAME_DB_FILE = "game.json";
 
@@ -20,6 +20,39 @@ const isGameType = (value: unknown): value is GameResponse => {
     //   return current && typeof acc === "number";
     // })
   );
+};
+
+const updateGameFile = (newGameObject: GameResponse) => {
+  try {
+    fs.writeFileSync(
+      `${GAME_DB_PATH}/game.json`,
+      JSON.stringify(newGameObject)
+    );
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const createNewGameFile = () => {
+  try {
+    if (!fs.existsSync(GAME_DB_PATH)) {
+      fs.mkdirSync(GAME_DB_PATH);
+    }
+    updateGameFile({
+      hasStarted: false,
+      playerIds: [],
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const deleteGame = () => {
+  try {
+    fs.rmSync(GAME_DB_PATH, { recursive: true, force: true });
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 export const getCurrentGameObject = (): GameResponse => {
@@ -46,32 +79,6 @@ export const getCurrentPlayerIds = (): number[] => {
   return currentGame.playerIds || [];
 };
 
-const createNewGame = () => {
-  const newGameObject: GameResponse = {
-    hasStarted: false,
-    playerIds: [],
-  };
-  try {
-    if (!fs.existsSync(GAME_DB_PATH)) {
-      fs.mkdirSync(GAME_DB_PATH);
-    }
-    fs.writeFileSync(
-      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
-      JSON.stringify(newGameObject)
-    );
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
-const deleteGame = () => {
-  try {
-    fs.rmSync(GAME_DB_PATH, { recursive: true, force: true });
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
 const getNextPlayerId = () => {
   const existingPlayerIds = getCurrentPlayerIds();
   if (!existingPlayerIds) {
@@ -86,44 +93,10 @@ const saveNewPlayerIdInGame = () => {
   playerModel.createNewPlayerFile(nextPlayerId);
   const newGameObject: GameResponse = {
     ...currentGame,
-    playerIds: currentGame.playerIds
-      ? [...currentGame.playerIds, nextPlayerId]
-      : [nextPlayerId],
+    playerIds: [...currentGame.playerIds, nextPlayerId],
   };
-  try {
-    fs.writeFileSync(
-      `${GAME_DB_PATH}/game.json`,
-      JSON.stringify(newGameObject)
-    );
-    return { game: newGameObject, playerId: nextPlayerId };
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
-const savePublicNumberInGame = (publicNumber: number) => {
-  try {
-    const currentGameObject = getCurrentGameObject();
-    const newGameObject: GameResponse = {
-      ...currentGameObject,
-      publicNumber,
-    };
-    fs.writeFileSync(
-      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
-      JSON.stringify(newGameObject)
-    );
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
-const getPublicNumberFromGame = (): number | null => {
-  try {
-    const currentGameObject = getCurrentGameObject();
-    return currentGameObject?.publicNumber || null;
-  } catch (error) {
-    throw new Error(error);
-  }
+  updateGameFile(newGameObject);
+  return { game: newGameObject, playerId: nextPlayerId };
 };
 
 const getNextTurnPlayerId = (currentGameObject: GameResponse) => {
@@ -143,10 +116,7 @@ const saveCurrentTurnPlayerIdInGame = (): GameResponse => {
       ...currentGameObject,
       currentTurnPlayerId: nextTurnPlayerId,
     };
-    fs.writeFileSync(
-      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
-      JSON.stringify(newGameObject)
-    );
+    updateGameFile(newGameObject);
     return newGameObject;
   } catch (error) {
     throw new Error(error);
@@ -166,10 +136,7 @@ const saveGameStart = (): {
       availableCards: getInitialDeckForGame(),
     };
 
-    fs.writeFileSync(
-      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
-      JSON.stringify(newGameObject)
-    );
+    updateGameFile(newGameObject);
 
     const initialDeckForPlayer = getInitialDeckForPlayer();
 
@@ -210,15 +177,7 @@ const removeCardsFromGameObject = (
 const removeCardsFromGameDb = (cards: Array<CardInGame>) => {
   const currentGameObject = getCurrentGameObject();
   removeCardsFromGameObject(cards, currentGameObject);
-  try {
-    fs.writeFileSync(
-      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
-      JSON.stringify(currentGameObject)
-    );
-    return currentGameObject;
-  } catch (error) {
-    throw new Error(error);
-  }
+  updateGameFile(currentGameObject);
 };
 
 export const moveCardsFromGameToPlayer = (
@@ -231,11 +190,28 @@ export const moveCardsFromGameToPlayer = (
   return { game, player };
 };
 
+const savePublicNumberInGame = (publicNumber: number) => {
+  const currentGameObject = getCurrentGameObject();
+  updateGameFile({
+    ...currentGameObject,
+    publicNumber,
+  });
+};
+
+const getPublicNumberFromGame = (): number | null => {
+  try {
+    const currentGameObject = getCurrentGameObject();
+    return currentGameObject?.publicNumber || null;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 export default {
   deleteGame,
   getPublicNumberFromGame,
   savePublicNumberInGame,
-  createNewGame,
+  createNewGameFile,
   getCurrentGameObject,
   getCurrentPlayerIds,
   saveGameStart,

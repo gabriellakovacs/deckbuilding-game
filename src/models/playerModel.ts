@@ -1,7 +1,7 @@
 import * as fs from "fs";
+import { cardInGameToCardInPlayer, shuffleArray } from "../cardHelpers.js";
 import { GAME_DB_PATH } from "../static/paths.js";
-import { CardInGame, CardInPlayer, PlayerResponse } from "../static/types.js";
-import { shuffleArray } from "../cardHelpers.js";
+import { CardInGame, PlayerResponse } from "../static/types.js";
 import { organizeCardsInHand } from "./../cardHelpers.js";
 
 const NR_OF_CARDS_START_OF_TURN = 5;
@@ -86,6 +86,33 @@ const updatePlayerFile = (
   }
 };
 
+const saveCardsInPlayer = (
+  cards: Array<CardInGame>,
+  location: "drawPile" | "throwPile" | "hand",
+  playerId: number
+) => {
+  const cardsToBeSaved = cardInGameToCardInPlayer(cards);
+  const currentPlayerObject = getPlayerObjectById(playerId);
+  const newPlayerobject = {
+    ...currentPlayerObject,
+    [location]: [...currentPlayerObject[location], ...cardsToBeSaved],
+  };
+  updatePlayerFile(playerId, newPlayerobject);
+  return newPlayerobject;
+};
+
+const endOfTurnTasks = (playerId: number, playerObject: PlayerResponse) => {
+  playerObject.throwPile = [...playerObject.throwPile, ...playerObject.hand];
+  if (playerObject.drawPile.length <= NR_OF_CARDS_START_OF_TURN) {
+    const shuffledThrowPile = shuffleArray(playerObject.throwPile);
+    playerObject.throwPile = [];
+    playerObject.drawPile = [...playerObject.drawPile, ...shuffledThrowPile];
+  }
+  playerObject.hand = organizeCardsInHand(playerObject.drawPile.splice(0, 5));
+  updatePlayerFile(playerId, playerObject);
+  return playerObject;
+};
+
 const savePrivateNumberInPlayer = ({
   privateNumber,
   playerId,
@@ -110,52 +137,6 @@ const getPrivateNumberFromPlayer = (playerId: number) => {
   } catch (error) {
     throw new Error(error);
   }
-};
-
-const cardInGameToCardInPlayer = (
-  cards: Array<CardInGame>
-): Array<CardInPlayer> => {
-  const cardsInPlayer = [];
-  cards.forEach((card) => {
-    for (let i = 0; i < card.nrOfCards; i++) {
-      cardsInPlayer.push({ name: card.name });
-    }
-  });
-  return cardsInPlayer;
-};
-
-const saveCardsInPlayer = (
-  cards: Array<CardInGame>,
-  location: "drawPile" | "throwPile" | "hand",
-  playerId: number
-) => {
-  const cardsToBeSaved = cardInGameToCardInPlayer(cards);
-  const currentPlayerObject = getPlayerObjectById(playerId);
-  const newPlayerobject = {
-    ...currentPlayerObject,
-    [location]: [...currentPlayerObject[location], ...cardsToBeSaved],
-  };
-  try {
-    fs.writeFileSync(
-      `${GAME_DB_PATH}/player_${playerId}.json`,
-      JSON.stringify(newPlayerobject)
-    );
-    return newPlayerobject;
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
-const endOfTurnTasks = (playerId: number, playerObject: PlayerResponse) => {
-  playerObject.throwPile = [...playerObject.throwPile, ...playerObject.hand];
-  if (playerObject.drawPile.length <= NR_OF_CARDS_START_OF_TURN) {
-    const shuffledThrowPile = shuffleArray(playerObject.throwPile);
-    playerObject.throwPile = [];
-    playerObject.drawPile = [...playerObject.drawPile, ...shuffledThrowPile];
-  }
-  playerObject.hand = organizeCardsInHand(playerObject.drawPile.splice(0, 5));
-  updatePlayerFile(playerId, playerObject);
-  return playerObject;
 };
 
 export default {
