@@ -176,11 +176,12 @@ const saveGameStart = (): {
     const players: { playerId: number; player: PlayerResponse }[] = [];
 
     newGameObject.playerIds.forEach((playerId) => {
-      const { player } = moveCardsFromGameToPlayer(
+      const { player: initialPlayerState } = moveCardsFromGameToPlayer(
         initialDeckForPlayer,
         playerId,
         "throwPile"
       );
+      const player = playerModel.endOfTurnTasks(playerId, initialPlayerState);
       players.push({ playerId, player });
     });
 

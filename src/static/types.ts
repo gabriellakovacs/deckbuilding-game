@@ -1,5 +1,14 @@
+export type CardType = "treasure" | "victoryPoint" | "action";
+export type TreasureCardNameType = "gold" | "silver" | "copper";
+export type ActionCardNameType = "estate" | "duchy" | "province";
+export type VictoryPointCardNameType = "market" | "cellar" | "festival";
+export type AllCardNames =
+  | TreasureCardNameType
+  | ActionCardNameType
+  | VictoryPointCardNameType;
+
 export type CardInGame = {
-  name: string;
+  name: AllCardNames;
   nrOfCards: number;
 };
 
@@ -12,7 +21,7 @@ export type GameResponse = {
 };
 
 export type CardInPlayer = {
-  name: string;
+  name: AllCardNames;
 };
 
 export type PlayerResponse = {

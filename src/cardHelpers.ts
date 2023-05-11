@@ -1,4 +1,9 @@
-import { CardInGame, PlayerResponse } from "./static/types";
+import {
+  AllCardNames,
+  CardInGame,
+  CardInPlayer,
+  CardType,
+} from "./static/types";
 
 export const getInitialDeckForGame = (): Array<CardInGame> => {
   return [
@@ -27,11 +32,11 @@ export const getInitialDeckForGame = (): Array<CardInGame> => {
       nrOfCards: 20,
     },
     {
-      name: "action_1",
+      name: "festival",
       nrOfCards: 20,
     },
     {
-      name: "action_2",
+      name: "cellar",
       nrOfCards: 20,
     },
   ];
@@ -53,4 +58,38 @@ export const shuffleArray = <T>(array: T[]): T[] => {
     arrayCopy[j] = temp;
   }
   return arrayCopy;
+};
+
+const getCardTypeFromName = (name: AllCardNames): CardType => {
+  switch (name) {
+    case "gold":
+    case "silver":
+    case "copper":
+      return "treasure";
+    case "estate":
+    case "duchy":
+    case "province":
+      return "victoryPoint";
+    case "market":
+    case "cellar":
+    case "festival":
+      return "action";
+    default:
+      console.error(`Invalid card name: ${name}`);
+  }
+};
+
+export const organizeCardsInHand = (
+  cards: Array<CardInPlayer>
+): Array<CardInPlayer> => {
+  const actionCards = cards.filter(
+    (card) => getCardTypeFromName(card.name) === "action"
+  );
+  const treasureCards = cards.filter(
+    (card) => getCardTypeFromName(card.name) === "treasure"
+  );
+  const victoryPointCards = cards.filter(
+    (card) => getCardTypeFromName(card.name) === "victoryPoint"
+  );
+  return [...actionCards, ...treasureCards, ...victoryPointCards];
 };

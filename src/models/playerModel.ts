@@ -1,6 +1,10 @@
 import * as fs from "fs";
 import { GAME_DB_PATH } from "../static/paths.js";
 import { CardInGame, CardInPlayer, PlayerResponse } from "../static/types.js";
+import { shuffleArray } from "../cardHelpers.js";
+import { organizeCardsInHand } from "./../cardHelpers.js";
+
+const NR_OF_CARDS_START_OF_TURN = 5;
 
 const isCardInPlayerType = (value: unknown): value is PlayerResponse => {
   return (
@@ -68,6 +72,20 @@ const createNewPlayerFile = (nextPlayerId: number) => {
   }
 };
 
+const updatePlayerFile = (
+  playerId: number,
+  newPlayerObject: PlayerResponse
+) => {
+  try {
+    fs.writeFileSync(
+      `${GAME_DB_PATH}/player_${playerId}.json`,
+      JSON.stringify(newPlayerObject)
+    );
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const savePrivateNumberInPlayer = ({
   privateNumber,
   playerId,
@@ -128,9 +146,22 @@ const saveCardsInPlayer = (
   }
 };
 
+const endOfTurnTasks = (playerId: number, playerObject: PlayerResponse) => {
+  playerObject.throwPile = [...playerObject.throwPile, ...playerObject.hand];
+  if (playerObject.drawPile.length <= NR_OF_CARDS_START_OF_TURN) {
+    const shuffledThrowPile = shuffleArray(playerObject.throwPile);
+    playerObject.throwPile = [];
+    playerObject.drawPile = [...playerObject.drawPile, ...shuffledThrowPile];
+  }
+  playerObject.hand = organizeCardsInHand(playerObject.drawPile.splice(0, 5));
+  updatePlayerFile(playerId, playerObject);
+  return playerObject;
+};
+
 export default {
   createNewPlayerFile,
   savePrivateNumberInPlayer,
   getPrivateNumberFromPlayer,
   saveCardsInPlayer,
+  endOfTurnTasks,
 };
