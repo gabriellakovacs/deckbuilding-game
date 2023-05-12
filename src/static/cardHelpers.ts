@@ -3,15 +3,15 @@ import { AllCardNames, CardInGame, CardInPlayer, CardType } from "./types";
 export const getInitialDeckForGame = (): Array<CardInGame> => {
   return [
     {
-      name: "gold",
-      nrOfCards: 20,
-    },
-    {
       name: "copper",
       nrOfCards: 20,
     },
     {
       name: "silver",
+      nrOfCards: 20,
+    },
+    {
+      name: "gold",
       nrOfCards: 20,
     },
     {
@@ -69,6 +69,54 @@ export const getCardTypeFromName = (name: AllCardNames): CardType => {
     case "cellar":
     case "festival":
       return "action";
+    default:
+      console.error(`Invalid card name: ${name}`);
+  }
+};
+
+export const getCardPriceFromName = (name: AllCardNames): number => {
+  switch (name) {
+    case "copper":
+    case "curse":
+      return 0;
+    case "estate":
+    case "cellar":
+    case "chapel":
+    case "moat":
+      return 2;
+    case "silver":
+    case "harbinger":
+    case "merchant":
+    case "vassal":
+    case "village":
+    case "workshop":
+      return 3;
+    case "bureaucrat":
+    case "gardens":
+    case "militia":
+    case "moneylender":
+    case "poacher":
+    case "remodel":
+    case "smithy":
+    case "throne room":
+      return 4;
+    case "duchy":
+    case "festival":
+    case "bandit":
+    case "council room":
+    case "laboratorry":
+    case "library":
+    case "market":
+    case "mine":
+    case "sentry":
+    case "witch":
+      return 5;
+    case "gold":
+    case "artisan":
+      return 6;
+    case "province":
+      return 8;
+
     default:
       console.error(`Invalid card name: ${name}`);
   }

@@ -1,5 +1,5 @@
-import { getCardTypeFromName } from "./../cardHelpers.js";
-import { GameResponse, PlayerResponse } from "../types";
+import { getCardPriceFromName, getCardTypeFromName } from "./../cardHelpers.js";
+import { CardInPlayer, GameResponse, PlayerResponse } from "../types";
 
 const MIN_NUMBER_OF_PLAYERS_FOR_GAME = 2;
 
@@ -93,6 +93,20 @@ export const updateUI = ({
   }
 };
 
+const getCardElement = (card: CardInPlayer) => {
+  const price = getCardPriceFromName(card.name);
+  const cardElement = document.createElement("div");
+  cardElement.className = "card";
+  const cardName = document.createElement("p");
+  cardName.innerHTML = card.name;
+  const cardPrice = document.createElement("span");
+  cardPrice.className = "cardPrice";
+  cardPrice.innerHTML = String(price);
+  cardElement.appendChild(cardName);
+  cardElement.appendChild(cardPrice);
+  return cardElement;
+};
+
 export const updatePlayersTurnUI = (playerObject: PlayerResponse) => {
   const componentDiv = document.getElementById("playersTurn");
   const hand = document.getElementById("hand");
@@ -101,9 +115,7 @@ export const updatePlayersTurnUI = (playerObject: PlayerResponse) => {
 
   hand.innerHTML = "";
   playerObject.hand.forEach((card) => {
-    const cardElement = document.createElement("div");
-    cardElement.className = "card";
-    cardElement.innerHTML = card.name;
+    const cardElement = getCardElement(card);
     hand.appendChild(cardElement);
   });
 
@@ -129,9 +141,7 @@ export const updateGameAvailableCardsUI = (gameObject: GameResponse) => {
   actionCards.innerHTML = "";
 
   gameObject.availableCards.forEach((card) => {
-    const cardElement = document.createElement("div");
-    cardElement.className = "card";
-    cardElement.innerHTML = card.name;
+    const cardElement = getCardElement(card);
 
     switch (getCardTypeFromName(card.name)) {
       case "action":

@@ -1,7 +1,37 @@
 export type CardType = "treasure" | "victoryPoint" | "action";
-export type TreasureCardNameType = "gold" | "silver" | "copper";
-export type ActionCardNameType = "estate" | "duchy" | "province";
-export type VictoryPointCardNameType = "market" | "cellar" | "festival";
+export type TreasureCardNameType = "copper" | "silver" | "gold";
+export type VictoryPointCardNameType =
+  | "estate"
+  | "duchy"
+  | "province"
+  | "curse";
+export type ActionCardNameType =
+  | "cellar"
+  | "chapel"
+  | "moat"
+  | "harbinger"
+  | "merchant"
+  | "vassal"
+  | "village"
+  | "workshop"
+  | "bureaucrat"
+  | "gardens"
+  | "militia"
+  | "moneylender"
+  | "poacher"
+  | "remodel"
+  | "smithy"
+  | "throne room"
+  | "bandit"
+  | "council room"
+  | "festival"
+  | "laboratorry"
+  | "library"
+  | "market"
+  | "mine"
+  | "sentry"
+  | "witch"
+  | "artisan";
 export type AllCardNames =
   | TreasureCardNameType
   | ActionCardNameType

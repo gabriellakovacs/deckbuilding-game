@@ -11,7 +11,10 @@
       border: 1px solid white;
     }
     .card {
+      position: relative;
       display: inline-block;
+      min-width: 55px;
+      height: 100px;
       padding: 16px;
       border: 1px solid pink;
       margin: 0 8px;
@@ -20,6 +23,21 @@
       border-bottom: 1px white dashed;
       padding-bottom: 8px;
       margin-bottom: 16px;
+    }
+    .cardPrice {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      padding: 5px;
+      border: 1px solid white;
+      border-radius: 92%;
+      width: 20px;
+      height: 20px;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 20px;
+      background: white;
+      color: black;
     }
   </style>
 </head>
