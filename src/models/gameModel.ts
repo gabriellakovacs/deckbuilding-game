@@ -8,7 +8,7 @@ import { GameResponse, PlayerResponse } from "../static/types.js";
 import type { CardInGame } from "./../static/types";
 import playerModel from "./playerModel.js";
 
-const GAME_DB_FILE = "game.json";
+const GAME_DB_FILE_PATH = `${GAME_DB_PATH}/game.json`;
 
 const isGameType = (value: unknown): value is GameResponse => {
   return (
@@ -24,10 +24,7 @@ const isGameType = (value: unknown): value is GameResponse => {
 
 const updateGameFile = (newGameObject: GameResponse) => {
   try {
-    fs.writeFileSync(
-      `${GAME_DB_PATH}/game.json`,
-      JSON.stringify(newGameObject)
-    );
+    fs.writeFileSync(GAME_DB_FILE_PATH, JSON.stringify(newGameObject));
   } catch (error) {
     throw new Error(error);
   }
@@ -47,20 +44,9 @@ const createNewGameFile = () => {
   }
 };
 
-const deleteGame = () => {
-  try {
-    fs.rmSync(GAME_DB_PATH, { recursive: true, force: true });
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
 export const getCurrentGameObject = (): GameResponse => {
   try {
-    const currentGame = fs.readFileSync(
-      `${GAME_DB_PATH}/${GAME_DB_FILE}`,
-      "utf8"
-    );
+    const currentGame = fs.readFileSync(GAME_DB_FILE_PATH, "utf8");
     const currentGameJson =
       currentGame[0] === "{" ? JSON.parse(currentGame) : {};
     if (!isGameType(currentGameJson)) {
@@ -207,8 +193,16 @@ const getPublicNumberFromGame = (): number | null => {
   }
 };
 
+const deleteEntireDb = () => {
+  try {
+    fs.rmSync(GAME_DB_PATH, { recursive: true, force: true });
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 export default {
-  deleteGame,
+  deleteGame: deleteEntireDb,
   getPublicNumberFromGame,
   savePublicNumberInGame,
   createNewGameFile,

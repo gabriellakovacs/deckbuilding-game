@@ -5,6 +5,8 @@ import { CardInGame, PlayerResponse } from "../static/types.js";
 import { organizeCardsInHand } from "./../cardHelpers.js";
 
 const NR_OF_CARDS_START_OF_TURN = 5;
+const getPayerFilePath = (playerId: number) =>
+  `${GAME_DB_PATH}/player_${playerId}.json`;
 
 const isCardInPlayerType = (value: unknown): value is PlayerResponse => {
   return (
@@ -39,10 +41,7 @@ const isPlayerType = (value: unknown): value is PlayerResponse => {
 
 const getPlayerObjectById = (playerId): PlayerResponse => {
   try {
-    const player = fs.readFileSync(
-      `${GAME_DB_PATH}/player_${playerId}.json`,
-      "utf8"
-    );
+    const player = fs.readFileSync(getPayerFilePath(playerId), "utf8");
     const playerJson = player[0] === "{" ? JSON.parse(player) : {};
     if (!isPlayerType(playerJson)) {
       throw new Error(
@@ -55,7 +54,7 @@ const getPlayerObjectById = (playerId): PlayerResponse => {
   }
 };
 
-const createNewPlayerFile = (nextPlayerId: number) => {
+const createNewPlayerFile = (playerId: number) => {
   const newPlayerObject: PlayerResponse = {
     drawPile: [],
     throwPile: [],
@@ -63,10 +62,10 @@ const createNewPlayerFile = (nextPlayerId: number) => {
   };
   try {
     fs.writeFileSync(
-      `${GAME_DB_PATH}/player_${nextPlayerId}.json`,
+      getPayerFilePath(playerId),
       JSON.stringify(newPlayerObject)
     );
-    return nextPlayerId;
+    return playerId;
   } catch (error) {
     throw new Error(error);
   }
@@ -78,7 +77,7 @@ const updatePlayerFile = (
 ) => {
   try {
     fs.writeFileSync(
-      `${GAME_DB_PATH}/player_${playerId}.json`,
+      getPayerFilePath(playerId),
       JSON.stringify(newPlayerObject)
     );
   } catch (error) {
@@ -122,7 +121,7 @@ const savePrivateNumberInPlayer = ({
 }) => {
   try {
     fs.writeFileSync(
-      `${GAME_DB_PATH}/player_${playerId}.json`,
+      getPayerFilePath(playerId),
       JSON.stringify({ privateNumber })
     );
   } catch (error) {
