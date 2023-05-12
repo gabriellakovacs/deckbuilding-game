@@ -38,7 +38,11 @@ const isPlayerType = (value: unknown): value is PlayerResponse => {
     ) &&
     "hand" in value &&
     Array.isArray(value.hand) &&
-    value.hand.reduce((acc, card) => acc && isCardInPlayerType(card), true)
+    value.hand.reduce((acc, card) => acc && isCardInPlayerType(card), true) &&
+    "actionRounds" in value &&
+    typeof value.actionRounds === "number" &&
+    "shoppingRounds" in value &&
+    typeof value.shoppingRounds === "number"
   );
 };
 
@@ -62,6 +66,8 @@ const createNewPlayerFile = (playerId: number) => {
     drawPile: [],
     throwPile: [],
     hand: [],
+    actionRounds: 0,
+    shoppingRounds: 0,
   };
   try {
     fs.writeFileSync(
@@ -110,7 +116,12 @@ const endOfTurnTasks = (playerId: number, playerObject: PlayerResponse) => {
     playerObject.throwPile = [];
     playerObject.drawPile = [...playerObject.drawPile, ...shuffledThrowPile];
   }
-  playerObject.hand = organizeCardsInHand(playerObject.drawPile.splice(0, 5));
+  playerObject = {
+    ...playerObject,
+    hand: organizeCardsInHand(playerObject.drawPile.splice(0, 5)),
+    actionRounds: 1,
+    shoppingRounds: 1,
+  };
   updatePlayerFile(playerId, playerObject);
   return playerObject;
 };

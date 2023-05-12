@@ -107,6 +107,31 @@ const getCardElement = (card: CardInPlayer) => {
   return cardElement;
 };
 
+const hasActionCard = (playerObject: PlayerResponse) => {
+  return Boolean(
+    playerObject.hand.find(
+      (card) => getCardTypeFromName(card.name) === "action"
+    )
+  );
+};
+
+const actionPossible = (playerObject: PlayerResponse) => {
+  return playerObject.actionRounds > 0 && hasActionCard(playerObject);
+};
+
+const hasTreasure = (playerObject: PlayerResponse) => {
+  // TODO: player can aalso have treasure from previous action cards
+  return Boolean(
+    playerObject.hand.find(
+      (card) => getCardTypeFromName(card.name) === "treasure"
+    )
+  );
+};
+
+const shoppingPossible = (playerObject: PlayerResponse) => {
+  return playerObject.shoppingRounds > 0 && hasTreasure(playerObject);
+};
+
 export const updatePlayersTurnUI = (playerObject: PlayerResponse) => {
   const componentDiv = document.getElementById("playersTurn");
   const hand = document.getElementById("hand");
@@ -128,6 +153,17 @@ export const updatePlayersTurnUI = (playerObject: PlayerResponse) => {
   const throwwPileInner = document.createElement("div");
   throwwPileInner.innerHTML = String(playerObject.throwPile.length);
   throwPile.appendChild(throwwPileInner);
+
+  if (actionPossible(playerObject)) {
+    // TODO
+    return null;
+  }
+  if (shoppingPossible(playerObject)) {
+    // TODO highlight cards that are within budget
+    const text = document.createElement("div");
+    text.innerHTML = "shopping round";
+    componentDiv.appendChild(text);
+  }
 };
 
 export const updateGameAvailableCardsUI = (gameObject: GameResponse) => {

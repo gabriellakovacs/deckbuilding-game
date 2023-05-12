@@ -58,6 +58,8 @@ export type PlayerResponse = {
   drawPile: CardInPlayer[];
   throwPile: CardInPlayer[];
   hand: CardInPlayer[];
+  actionRounds: number;
+  shoppingRounds: number;
   privateNumber?: number;
 };
 
