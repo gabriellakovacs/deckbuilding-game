@@ -1,4 +1,28 @@
 <!Doctype html>
+<head>
+  <style>
+    body {
+      background: black;
+      color: white;
+      padding: 8px;
+    }
+    .pile {
+      padding: 16px;
+      border: 1px solid white;
+    }
+    .card {
+      display: inline-block;
+      padding: 16px;
+      border: 1px solid pink;
+      margin: 0 8px;
+    }
+    .gameAvailableCards, .playersCards {
+      border-bottom: 1px white dashed;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
   <body>
     <!-- ENTRY ROOM -->
     <div id="entryRoom">
@@ -25,11 +49,32 @@
     <!-- GAME ROOM -->
     <div id="gameRoom" style="display: none">
       <h2>Game on</h2>
-      <div id="playersTurn">
-        your turn
-        <button id="endOfTurnButton">end of turn</button>
+      <!-- GAME CARDS -->
+      <h3>Game cards</h3>
+      <div id="gameAvailableCards" class="gameAvailableCards">
+        <p>TREASURE CARDS</p>
+        <div id="treasureCards"></div>
+        <p>VICTORY POINT CARDS</p>
+        <div id="victoryPointCards"></div>
+        <p>ACTION CARDS</p>
+        <div id="actionCards"></div>
       </div>
-      <div id="notPlayersTurn">waiting for other player's turn to end</div>
+      <!-- PLAYERS CARDS -->
+      <h3>Players cards</h3>
+      <div id="playersCards" class="playersCards">
+        <div id="playersTurn">
+          your turn
+          <p>DRAW PILE</p>
+          <div id="drawPile" class="pile"></div>
+          <p>HAND</p>
+          <div id="hand" class="pile hand"></div>
+          <p>THROW PILE</p>
+          <div id="throwPile" class="pile"></div>
+          <button id="endOfTurnButton">end of turn</button>
+        </div>
+        <div id="notPlayersTurn">waiting for other player's turn to end</div>
+      </div>
+     
 
     <!-- PUBLIC NUMBER START -->
     <div>- - - - - -</div>

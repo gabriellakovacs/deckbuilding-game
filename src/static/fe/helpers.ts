@@ -1,4 +1,8 @@
-import { updateUI } from "./uiUpdate.js";
+import {
+  updateGameAvailableCardsUI,
+  updatePlayersTurnUI,
+  updateUI,
+} from "./uiUpdate.js";
 import { GameResponse, WebSocketMessage } from "../types.js";
 import { isGameResponseType } from "./types.js";
 
@@ -33,6 +37,11 @@ export const startWebSocket = () => {
       }
       if (response.type === "game") {
         updateUI(gameToUpdateUiInput(response.game));
+        updateGameAvailableCardsUI(response.game);
+        return;
+      }
+      if (response.type === "player") {
+        updatePlayersTurnUI(response.player);
         return;
       }
     }

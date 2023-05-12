@@ -1,9 +1,4 @@
-import {
-  AllCardNames,
-  CardInGame,
-  CardInPlayer,
-  CardType,
-} from "./static/types";
+import { AllCardNames, CardInGame, CardInPlayer, CardType } from "./types";
 
 export const getInitialDeckForGame = (): Array<CardInGame> => {
   return [
@@ -60,7 +55,7 @@ export const shuffleArray = <T>(array: T[]): T[] => {
   return arrayCopy;
 };
 
-const getCardTypeFromName = (name: AllCardNames): CardType => {
+export const getCardTypeFromName = (name: AllCardNames): CardType => {
   switch (name) {
     case "gold":
     case "silver":

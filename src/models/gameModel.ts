@@ -2,7 +2,7 @@ import * as fs from "fs";
 import {
   getInitialDeckForGame,
   getInitialDeckForPlayer,
-} from "../cardHelpers.js";
+} from "../static/cardHelpers.js";
 import { GAME_DB_PATH } from "../static/paths.js";
 import { GameResponse, PlayerResponse } from "../static/types.js";
 import type { CardInGame } from "./../static/types";

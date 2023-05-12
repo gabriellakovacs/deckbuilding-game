@@ -1,3 +1,6 @@
+import { getCardTypeFromName } from "./../cardHelpers.js";
+import { GameResponse, PlayerResponse } from "../types";
+
 const MIN_NUMBER_OF_PLAYERS_FOR_GAME = 2;
 
 // ENTRY ROOM
@@ -88,4 +91,64 @@ export const updateUI = ({
   } else if (!playerId) {
     updateUiEntryRoom(hasGameStarted);
   }
+};
+
+export const updatePlayersTurnUI = (playerObject: PlayerResponse) => {
+  const componentDiv = document.getElementById("playersTurn");
+  const hand = document.getElementById("hand");
+  const drawPile = document.getElementById("drawPile");
+  const throwPile = document.getElementById("throwPile");
+
+  hand.innerHTML = "";
+  playerObject.hand.forEach((card) => {
+    const cardElement = document.createElement("div");
+    cardElement.className = "card";
+    cardElement.innerHTML = card.name;
+    hand.appendChild(cardElement);
+  });
+
+  drawPile.innerHTML = "";
+  const drawPileInner = document.createElement("div");
+  drawPileInner.innerHTML = String(playerObject.drawPile.length);
+  drawPile.appendChild(drawPileInner);
+
+  throwPile.innerHTML = "";
+  const throwwPileInner = document.createElement("div");
+  throwwPileInner.innerHTML = String(playerObject.throwPile.length);
+  throwPile.appendChild(throwwPileInner);
+};
+
+export const updateGameAvailableCardsUI = (gameObject: GameResponse) => {
+  const componentDiv = document.getElementById("gameAvailableCards");
+  const treasureCards = document.getElementById("treasureCards");
+  const victoryPointCards = document.getElementById("victoryPointCards");
+  const actionCards = document.getElementById("actionCards");
+
+  treasureCards.innerHTML = "";
+  victoryPointCards.innerHTML = "";
+  actionCards.innerHTML = "";
+
+  gameObject.availableCards.forEach((card) => {
+    const cardElement = document.createElement("div");
+    cardElement.className = "card";
+    cardElement.innerHTML = card.name;
+
+    switch (getCardTypeFromName(card.name)) {
+      case "action":
+        actionCards.appendChild(cardElement);
+        break;
+      case "treasure":
+        treasureCards.appendChild(cardElement);
+        break;
+      case "victoryPoint":
+        victoryPointCards.appendChild(cardElement);
+        break;
+      default:
+        console.log(
+          `Unexpected value ${getCardTypeFromName(
+            card.name
+          )} for getCardTypeFromName`
+        );
+    }
+  });
 };

@@ -1,5 +1,5 @@
 import { getGame, handleEndOfTurn, handleStartGame } from "./gameAPICalls.js";
-import { gameToUpdateUiInput } from "./helpers.js";
+import { gameToUpdateUiInput, startWebSocket } from "./helpers.js";
 import {
   handleGeneratePrivateNumber,
   handleUpdatePrivateNumber,
@@ -17,6 +17,7 @@ const checkGameState = async () => {
 };
 
 checkGameState();
+startWebSocket();
 
 document
   .querySelector("#generatePublicNumberButton")

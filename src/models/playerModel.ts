@@ -1,8 +1,11 @@
 import * as fs from "fs";
-import { cardInGameToCardInPlayer, shuffleArray } from "../cardHelpers.js";
+import {
+  cardInGameToCardInPlayer,
+  shuffleArray,
+} from "../static/cardHelpers.js";
 import { GAME_DB_PATH } from "../static/paths.js";
 import { CardInGame, PlayerResponse } from "../static/types.js";
-import { organizeCardsInHand } from "./../cardHelpers.js";
+import { organizeCardsInHand } from "../static/cardHelpers.js";
 
 const NR_OF_CARDS_START_OF_TURN = 5;
 const getPayerFilePath = (playerId: number) =>
