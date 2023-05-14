@@ -1,4 +1,10 @@
-import { AllCardNames, CardInGame, CardInPlayer, CardType } from "./types";
+import {
+  AllCardNames,
+  CardInGame,
+  CardInPlayer,
+  CardType,
+  TreasureCardNameType,
+} from "./types";
 
 export const getInitialDeckForGame = (): Array<CardInGame> => {
   return [
@@ -74,6 +80,12 @@ export const getCardTypeFromName = (name: AllCardNames): CardType => {
   }
 };
 
+export const isTreasureCardType = (
+  value: string | undefined
+): value is TreasureCardNameType => {
+  return ["gold", "silver", "copper"].includes(value);
+};
+
 export const getCardPriceFromName = (name: AllCardNames): number => {
   switch (name) {
     case "copper":
@@ -119,6 +131,19 @@ export const getCardPriceFromName = (name: AllCardNames): number => {
 
     default:
       console.error(`Invalid card name: ${name}`);
+  }
+};
+
+export const getCardValueFromName = (name: TreasureCardNameType) => {
+  switch (name) {
+    case "gold":
+      return 3;
+    case "silver":
+      return 2;
+    case "copper":
+      return 1;
+    default:
+      console.error(`Invalid treasure card name: ${name}`);
   }
 };
 

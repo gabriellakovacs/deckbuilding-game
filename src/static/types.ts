@@ -54,7 +54,13 @@ export type CardInPlayer = {
   name: AllCardNames;
 };
 
+export type TreasureCardWithValue = {
+  name: TreasureCardNameType;
+  value: number;
+};
+
 export type PlayerResponse = {
+  id: number;
   drawPile: CardInPlayer[];
   throwPile: CardInPlayer[];
   hand: CardInPlayer[];

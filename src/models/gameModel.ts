@@ -111,7 +111,7 @@ const saveCurrentTurnPlayerIdInGame = (): GameResponse => {
 
 const saveGameStart = (): {
   game: GameResponse;
-  players: { playerId: number; player: PlayerResponse }[];
+  players: PlayerResponse[];
 } => {
   try {
     const currentGameObject = getCurrentGameObject();
@@ -126,7 +126,7 @@ const saveGameStart = (): {
 
     const initialDeckForPlayer = getInitialDeckForPlayer();
 
-    const players: { playerId: number; player: PlayerResponse }[] = [];
+    const players: PlayerResponse[] = [];
 
     newGameObject.playerIds.forEach((playerId) => {
       const { player: initialPlayerState } = moveCardsFromGameToPlayer(
@@ -134,8 +134,8 @@ const saveGameStart = (): {
         playerId,
         "throwPile"
       );
-      const player = playerModel.endOfTurnTasks(playerId, initialPlayerState);
-      players.push({ playerId, player });
+      const player = playerModel.endOfTurnTasks(initialPlayerState);
+      players.push(player);
     });
 
     return { game: newGameObject, players };
@@ -211,4 +211,5 @@ export default {
   saveGameStart,
   saveCurrentTurnPlayerIdInGame,
   saveNewPlayerIdInGame,
+  updateGameFile,
 };

@@ -4,14 +4,14 @@ import {
   shuffleArray,
 } from "../static/cardHelpers.js";
 import { GAME_DB_PATH } from "../static/paths.js";
-import { CardInGame, PlayerResponse } from "../static/types.js";
+import { CardInGame, CardInPlayer, PlayerResponse } from "../static/types.js";
 import { organizeCardsInHand } from "../static/cardHelpers.js";
 
 const NR_OF_CARDS_START_OF_TURN = 5;
-const getPayerFilePath = (playerId: number) =>
+const getPlayerFilePath = (playerId: number) =>
   `${GAME_DB_PATH}/player_${playerId}.json`;
 
-const isCardInPlayerType = (value: unknown): value is PlayerResponse => {
+const isCardInPlayerType = (value: unknown): value is CardInPlayer => {
   return (
     typeof value === "object" &&
     value !== null &&
@@ -42,13 +42,15 @@ const isPlayerType = (value: unknown): value is PlayerResponse => {
     "actionRounds" in value &&
     typeof value.actionRounds === "number" &&
     "shoppingRounds" in value &&
-    typeof value.shoppingRounds === "number"
+    typeof value.shoppingRounds === "number" &&
+    "id" in value &&
+    typeof value.id === "number"
   );
 };
 
 const getPlayerObjectById = (playerId): PlayerResponse => {
   try {
-    const player = fs.readFileSync(getPayerFilePath(playerId), "utf8");
+    const player = fs.readFileSync(getPlayerFilePath(playerId), "utf8");
     const playerJson = player[0] === "{" ? JSON.parse(player) : {};
     if (!isPlayerType(playerJson)) {
       throw new Error(
@@ -63,6 +65,7 @@ const getPlayerObjectById = (playerId): PlayerResponse => {
 
 const createNewPlayerFile = (playerId: number) => {
   const newPlayerObject: PlayerResponse = {
+    id: playerId,
     drawPile: [],
     throwPile: [],
     hand: [],
@@ -71,7 +74,7 @@ const createNewPlayerFile = (playerId: number) => {
   };
   try {
     fs.writeFileSync(
-      getPayerFilePath(playerId),
+      getPlayerFilePath(playerId),
       JSON.stringify(newPlayerObject)
     );
     return playerId;
@@ -80,13 +83,10 @@ const createNewPlayerFile = (playerId: number) => {
   }
 };
 
-const updatePlayerFile = (
-  playerId: number,
-  newPlayerObject: PlayerResponse
-) => {
+const updatePlayerFile = (newPlayerObject: PlayerResponse) => {
   try {
     fs.writeFileSync(
-      getPayerFilePath(playerId),
+      getPlayerFilePath(newPlayerObject.id),
       JSON.stringify(newPlayerObject)
     );
   } catch (error) {
@@ -105,11 +105,11 @@ const saveCardsInPlayer = (
     ...currentPlayerObject,
     [location]: [...currentPlayerObject[location], ...cardsToBeSaved],
   };
-  updatePlayerFile(playerId, newPlayerobject);
+  updatePlayerFile(newPlayerobject);
   return newPlayerobject;
 };
 
-const endOfTurnTasks = (playerId: number, playerObject: PlayerResponse) => {
+const endOfTurnTasks = (playerObject: PlayerResponse) => {
   playerObject.throwPile = [...playerObject.throwPile, ...playerObject.hand];
   if (playerObject.drawPile.length <= NR_OF_CARDS_START_OF_TURN) {
     const shuffledThrowPile = shuffleArray(playerObject.throwPile);
@@ -122,7 +122,7 @@ const endOfTurnTasks = (playerId: number, playerObject: PlayerResponse) => {
     actionRounds: 1,
     shoppingRounds: 1,
   };
-  updatePlayerFile(playerId, playerObject);
+  updatePlayerFile(playerObject);
   return playerObject;
 };
 
@@ -135,7 +135,7 @@ const savePrivateNumberInPlayer = ({
 }) => {
   try {
     fs.writeFileSync(
-      getPayerFilePath(playerId),
+      getPlayerFilePath(playerId),
       JSON.stringify({ privateNumber })
     );
   } catch (error) {
@@ -158,4 +158,5 @@ export default {
   getPrivateNumberFromPlayer,
   saveCardsInPlayer,
   endOfTurnTasks,
+  updatePlayerFile,
 };

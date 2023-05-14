@@ -9,6 +9,7 @@ export const API_GAME = "/api/game";
 export const API_START_GAME = "/api/game/start";
 export const API_END_TURN = `/api/game/end-turn`;
 export const API_CREATE_PLAYER = "/api/game/create-player";
+export const API_PLAYER = "/api/player";
 
 export const API_PUBLIC_NUMBER = "/api/public-number";
 export const API_PRIVATE_NUMBER = (playerId) =>
@@ -29,4 +30,5 @@ export default {
   API_PRIVATE_NUMBER_REGEX,
   API_START_GAME,
   API_END_TURN,
+  API_PLAYER,
 };

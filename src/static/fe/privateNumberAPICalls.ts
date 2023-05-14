@@ -1,6 +1,6 @@
 import paths from "../paths.js";
 import {
-  throwMissingPropError,
+  throwUnexpectedResponse,
   updatePrivateNumber,
   getPlayerIdFromCurrentUrl,
 } from "./helpers.js";
@@ -26,11 +26,10 @@ export const getPrivateNumber = async (playerId: number) => {
     const jsonResponse: unknown = await response.json();
 
     if (!isPrivateNumberResponseType(jsonResponse)) {
-      throwMissingPropError({
+      throwUnexpectedResponse({
         method,
         url,
         jsonResponse,
-        propName: "privateNumber",
       });
       return;
     }
@@ -50,11 +49,10 @@ export const handleGeneratePrivateNumber = async () => {
     const jsonResponse: unknown = await response.json();
 
     if (!isPrivateNumberResponseType(jsonResponse)) {
-      throwMissingPropError({
+      throwUnexpectedResponse({
         method,
         url,
         jsonResponse,
-        propName: "privateNumber",
       });
       return;
     }
@@ -85,11 +83,10 @@ export const handleUpdatePrivateNumber = async () => {
     const jsonResponse: unknown = await response.json();
 
     if (!isPrivateNumberResponseType(jsonResponse)) {
-      throwMissingPropError({
+      throwUnexpectedResponse({
         method,
         url,
         jsonResponse,
-        propName: "privateNumber",
       });
       return;
     }

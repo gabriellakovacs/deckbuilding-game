@@ -1,5 +1,5 @@
 import paths from "../paths.js";
-import { gameToUpdateUiInput, throwMissingPropError } from "./helpers.js";
+import { gameToUpdateUiInput, throwUnexpectedResponse } from "./helpers.js";
 import { updateUI } from "./uiUpdate.js";
 
 import { isGameResponseType, isGenericResponseType } from "./types.js";
@@ -17,11 +17,10 @@ export const handleStartGame = async () => {
       !isGenericResponseType(jsonResponse) ||
       !isGameResponseType(jsonResponse.data)
     ) {
-      throwMissingPropError({
+      throwUnexpectedResponse({
         method,
         url,
         jsonResponse,
-        propName: "hasStarted",
       });
       return;
     }
@@ -43,11 +42,10 @@ export const handleEndOfTurn = async () => {
       !isGenericResponseType(jsonResponse) ||
       !isGameResponseType(jsonResponse.data)
     ) {
-      throwMissingPropError({
+      throwUnexpectedResponse({
         method,
         url,
         jsonResponse,
-        propName: "success",
       });
       return;
     }
@@ -69,15 +67,45 @@ export const getGame = async (): Promise<GameResponse> => {
       !isGenericResponseType(jsonResponse) ||
       !isGameResponseType(jsonResponse.data)
     ) {
-      throwMissingPropError({
+      throwUnexpectedResponse({
         method,
         url,
         jsonResponse,
-        propName: "playerIds",
       });
       return;
     }
     return jsonResponse.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const saveGame = async (gameObject: GameResponse) => {
+  const method = "PUT";
+  const url = `${paths.BASE_URL}${paths.API_GAME}`;
+
+  try {
+    const response = await fetch(url, {
+      method,
+      body: JSON.stringify(gameObject),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const jsonResponse: unknown = await response.json();
+    if (
+      !isGenericResponseType(jsonResponse) ||
+      !isGameResponseType(jsonResponse.data)
+    ) {
+      throwUnexpectedResponse({
+        method,
+        url,
+        jsonResponse,
+      });
+      return;
+    }
+
+    // UI update is made after websocket message. Figure out a better way to handle this
   } catch (error) {
     console.error(error);
   }

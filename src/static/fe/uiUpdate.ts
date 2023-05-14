@@ -1,5 +1,7 @@
+import { CardInPlayer, GameResponse, PlayerResponse } from "../types.js";
 import { getCardPriceFromName, getCardTypeFromName } from "./../cardHelpers.js";
-import { CardInPlayer, GameResponse, PlayerResponse } from "../types";
+import { actionPossible } from "./actionRound.js";
+import { handleShoppingRound } from "./shoppingRound.js";
 
 const MIN_NUMBER_OF_PLAYERS_FOR_GAME = 2;
 
@@ -93,10 +95,11 @@ export const updateUI = ({
   }
 };
 
-const getCardElement = (card: CardInPlayer) => {
+const createCardUI = (card: CardInPlayer) => {
   const price = getCardPriceFromName(card.name);
   const cardElement = document.createElement("div");
   cardElement.className = "card";
+  cardElement.setAttribute("data-name", card.name);
   const cardName = document.createElement("p");
   cardName.innerHTML = card.name;
   const cardPrice = document.createElement("span");
@@ -107,40 +110,18 @@ const getCardElement = (card: CardInPlayer) => {
   return cardElement;
 };
 
-const hasActionCard = (playerObject: PlayerResponse) => {
-  return Boolean(
-    playerObject.hand.find(
-      (card) => getCardTypeFromName(card.name) === "action"
-    )
-  );
-};
-
-const actionPossible = (playerObject: PlayerResponse) => {
-  return playerObject.actionRounds > 0 && hasActionCard(playerObject);
-};
-
-const hasTreasure = (playerObject: PlayerResponse) => {
-  // TODO: player can aalso have treasure from previous action cards
-  return Boolean(
-    playerObject.hand.find(
-      (card) => getCardTypeFromName(card.name) === "treasure"
-    )
-  );
-};
-
-const shoppingPossible = (playerObject: PlayerResponse) => {
-  return playerObject.shoppingRounds > 0 && hasTreasure(playerObject);
-};
-
-export const updatePlayersTurnUI = (playerObject: PlayerResponse) => {
-  const componentDiv = document.getElementById("playersTurn");
+// PLAYERS TURN
+export const updatePlayersTurnUI = (
+  playerObject: PlayerResponse,
+  game?: GameResponse
+) => {
   const hand = document.getElementById("hand");
   const drawPile = document.getElementById("drawPile");
   const throwPile = document.getElementById("throwPile");
 
   hand.innerHTML = "";
   playerObject.hand.forEach((card) => {
-    const cardElement = getCardElement(card);
+    const cardElement = createCardUI(card);
     hand.appendChild(cardElement);
   });
 
@@ -154,18 +135,20 @@ export const updatePlayersTurnUI = (playerObject: PlayerResponse) => {
   throwwPileInner.innerHTML = String(playerObject.throwPile.length);
   throwPile.appendChild(throwwPileInner);
 
-  if (actionPossible(playerObject)) {
-    // TODO
-    return null;
-  }
-  if (shoppingPossible(playerObject)) {
-    // TODO highlight cards that are within budget
-    const text = document.createElement("div");
-    text.innerHTML = "shopping round";
-    componentDiv.appendChild(text);
+  if (game.currentTurnPlayerId === playerObject.id) {
+    if (actionPossible(playerObject)) {
+      // TODO
+      return null;
+    }
+
+    handleShoppingRound(playerObject, game, (gameObject, playerObject) => {
+      updateGameAvailableCardsUI(gameObject);
+      updatePlayersTurnUI(playerObject, gameObject);
+    });
   }
 };
 
+// GAME CARDS
 export const updateGameAvailableCardsUI = (gameObject: GameResponse) => {
   const componentDiv = document.getElementById("gameAvailableCards");
   const treasureCards = document.getElementById("treasureCards");
@@ -176,8 +159,8 @@ export const updateGameAvailableCardsUI = (gameObject: GameResponse) => {
   victoryPointCards.innerHTML = "";
   actionCards.innerHTML = "";
 
-  gameObject.availableCards.forEach((card) => {
-    const cardElement = getCardElement(card);
+  gameObject.availableCards?.forEach((card) => {
+    const cardElement = createCardUI(card);
 
     switch (getCardTypeFromName(card.name)) {
       case "action":
@@ -190,11 +173,9 @@ export const updateGameAvailableCardsUI = (gameObject: GameResponse) => {
         victoryPointCards.appendChild(cardElement);
         break;
       default:
-        console.log(
-          `Unexpected value ${getCardTypeFromName(
-            card.name
-          )} for getCardTypeFromName`
-        );
+        throw `Unexpected value ${getCardTypeFromName(
+          card.name
+        )} for getCardTypeFromName`;
     }
   });
 };

@@ -4,7 +4,7 @@ import {
   updateUI,
 } from "./uiUpdate.js";
 import { GameResponse, WebSocketMessage } from "../types.js";
-import { isGameResponseType } from "./types.js";
+import { isGameResponseType, isPlayerResponseType } from "./types.js";
 
 export const isWebSocketMessageType = (
   value: unknown
@@ -16,12 +16,15 @@ export const isWebSocketMessageType = (
     typeof value.type === "string" &&
     (value.type === "game"
       ? "game" in value && isGameResponseType(value.game)
+      : value.type === "player"
+      ? "player" in value && isPlayerResponseType(value.player)
       : value.type === "publicNumber"
       ? "publicNumber" in value && typeof value.publicNumber === "number"
       : true)
   );
 };
 
+let game: GameResponse | undefined;
 export const startWebSocket = () => {
   const webSocket = new WebSocket("ws://localhost:8080");
   webSocket.onopen = (event) => {
@@ -38,24 +41,23 @@ export const startWebSocket = () => {
       if (response.type === "game") {
         updateUI(gameToUpdateUiInput(response.game));
         updateGameAvailableCardsUI(response.game);
+        game = response.game;
         return;
       }
-      if (response.type === "player") {
-        updatePlayersTurnUI(response.player);
+      if (
+        response.type === "player" &&
+        response.player.id === getPlayerIdFromCurrentUrl()
+      ) {
+        updatePlayersTurnUI({ ...response.player }, game);
         return;
       }
     }
   };
 };
 
-export const throwMissingPropError = ({
-  method,
-  url,
-  jsonResponse,
-  propName,
-}) => {
+export const throwUnexpectedResponse = ({ method, url, jsonResponse }) => {
   throw new Error(
-    `Missing prop ${propName} from response to ${method} ${url}. Recieved ${jsonResponse}`
+    `Unexpected response from ${method} ${url}. Recieved ${jsonResponse}`
   );
 };
 

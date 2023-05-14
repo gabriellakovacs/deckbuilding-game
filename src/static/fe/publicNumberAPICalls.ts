@@ -1,5 +1,5 @@
 import paths from "../paths.js";
-import { throwMissingPropError, updatePublicNumber } from "./helpers.js";
+import { throwUnexpectedResponse, updatePublicNumber } from "./helpers.js";
 
 type PublicNumberResponse = {
   publicNumber: number;
@@ -20,11 +20,10 @@ export const getPublicNumber = async () => {
     const jsonResponse: unknown = await response.json();
 
     if (!isPublicNumberResponseType(jsonResponse)) {
-      throwMissingPropError({
+      throwUnexpectedResponse({
         method,
         url,
         jsonResponse,
-        propName: "publicNumber",
       });
       return;
     }
@@ -43,11 +42,10 @@ export const handleGeneratePublicNumber = async () => {
     const jsonResponse: unknown = await response.json();
 
     if (!isPublicNumberResponseType(jsonResponse)) {
-      throwMissingPropError({
+      throwUnexpectedResponse({
         method,
         url,
         jsonResponse,
-        propName: "publicNumber",
       });
       return;
     }
@@ -76,11 +74,10 @@ export const handleUpdatePublicNumber = async () => {
     const jsonResponse: unknown = await response.json();
 
     if (!isPublicNumberResponseType(jsonResponse)) {
-      throwMissingPropError({
+      throwUnexpectedResponse({
         method,
         url,
         jsonResponse,
-        propName: "publicNumber",
       });
       return;
     }

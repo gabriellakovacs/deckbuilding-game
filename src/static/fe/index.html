@@ -18,6 +18,7 @@
       padding: 16px;
       border: 1px solid pink;
       margin: 0 8px;
+      text-align: center;
     }
     .gameAvailableCards, .playersCards {
       border-bottom: 1px white dashed;
@@ -38,6 +39,10 @@
       line-height: 20px;
       background: white;
       color: black;
+    }
+    .buyme {
+      border: 1px solid greenyellow;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -81,16 +86,20 @@
       <h3>Players cards</h3>
       <div id="playersCards" class="playersCards">
         <div id="playersTurn">
-          your turn
+          <p>your turn</p>
+          <p>current round: <span id="roundName"></span></p>
+          <button id="endOfTurnButton">end of turn</button>
+        </div>
+        <div id="notPlayersTurn">waiting for other player's turn to end</div>
+          
           <p>DRAW PILE</p>
           <div id="drawPile" class="pile"></div>
           <p>HAND</p>
           <div id="hand" class="pile hand"></div>
           <p>THROW PILE</p>
           <div id="throwPile" class="pile"></div>
-          <button id="endOfTurnButton">end of turn</button>
-        </div>
-        <div id="notPlayersTurn">waiting for other player's turn to end</div>
+          
+        
       </div>
      
 
