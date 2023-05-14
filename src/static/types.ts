@@ -66,6 +66,7 @@ export type PlayerResponse = {
   hand: CardInPlayer[];
   actionRounds: number;
   shoppingRounds: number;
+  playedActionCards: CardInPlayer[];
 };
 
 export type WebSocketMessage =

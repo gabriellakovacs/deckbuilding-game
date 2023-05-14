@@ -1,4 +1,5 @@
 import {
+  ActionCardNameType,
   AllCardNames,
   CardInGame,
   CardInPlayer,
@@ -33,11 +34,31 @@ export const getInitialDeckForGame = (): Array<CardInGame> => {
       nrOfCards: 20,
     },
     {
+      name: "curse",
+      nrOfCards: 20,
+    },
+    {
       name: "festival",
       nrOfCards: 20,
     },
     {
       name: "cellar",
+      nrOfCards: 20,
+    },
+    {
+      name: "market",
+      nrOfCards: 20,
+    },
+    {
+      name: "smithy",
+      nrOfCards: 20,
+    },
+    {
+      name: "village",
+      nrOfCards: 20,
+    },
+    {
+      name: "workshop",
       nrOfCards: 20,
     },
   ];
@@ -70,10 +91,46 @@ export const getCardTypeFromName = (name: AllCardNames): CardType => {
     case "estate":
     case "duchy":
     case "province":
+    case "curse":
       return "victoryPoint";
     case "market":
     case "cellar":
     case "festival":
+    case "chapel":
+    case "moat":
+    case "harbinger":
+    case "merchant":
+    case "vassal":
+    case "village":
+    case "workshop":
+    case "bureaucrat":
+    case "gardens":
+    case "militia":
+    case "moneylender":
+    case "poacher":
+    case "remodel":
+    case "smithy":
+    case "throne room":
+    case "duchy":
+    case "festival":
+    case "bandit":
+    case "laboratorry":
+    case "library":
+    case "market":
+    case "mine":
+    case "sentry":
+    case "witch":
+    case "duchy":
+    case "festival":
+    case "bandit":
+    case "council room":
+    case "laboratorry":
+    case "library":
+    case "market":
+    case "mine":
+    case "sentry":
+    case "witch":
+    case "artisan":
       return "action";
     default:
       console.error(`Invalid card name: ${name}`);
@@ -84,6 +141,51 @@ export const isTreasureCardType = (
   value: string | undefined
 ): value is TreasureCardNameType => {
   return ["gold", "silver", "copper"].includes(value);
+};
+
+export const isActionCardType = (
+  value: string | undefined
+): value is ActionCardNameType => {
+  return [
+    "market",
+    "cellar",
+    "festival",
+    "chapel",
+    "moat",
+    "harbinger",
+    "merchant",
+    "vassal",
+    "village",
+    "workshop",
+    "bureaucrat",
+    "gardens",
+    "militia",
+    "moneylender",
+    "poacher",
+    "remodel",
+    "smithy",
+    "throne room",
+    "duchy",
+    "festival",
+    "bandit",
+    "laboratorry",
+    "library",
+    "market",
+    "mine",
+    "sentry",
+    "witch",
+    "duchy",
+    "festival",
+    "bandit",
+    "council room",
+    "laboratorry",
+    "library",
+    "market",
+    "mine",
+    "sentry",
+    "witch",
+    "artisan",
+  ].includes(value);
 };
 
 export const getCardPriceFromName = (name: AllCardNames): number => {

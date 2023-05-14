@@ -5,7 +5,7 @@ import {
   PlayerResponse,
 } from "../types.js";
 import { getCardPriceFromName, getCardTypeFromName } from "./../cardHelpers.js";
-import { actionPossible } from "./actionRound.js";
+import { actionPossible, handleActionRound } from "./actionRound.js";
 import { handleShoppingRound } from "./shoppingRound.js";
 
 const MIN_NUMBER_OF_PLAYERS_FOR_GAME = 2;
@@ -126,6 +126,7 @@ export const updatePlayersTurnUI = (
   const hand = document.getElementById("hand");
   const drawPile = document.getElementById("drawPile");
   const throwPile = document.getElementById("throwPile");
+  const playedActionCards = document.getElementById("playedActionCards");
 
   hand.innerHTML = "";
   playerObject.hand.forEach((card) => {
@@ -143,9 +144,15 @@ export const updatePlayersTurnUI = (
   throwwPileInner.innerHTML = String(playerObject.throwPile.length);
   throwPile.appendChild(throwwPileInner);
 
+  playedActionCards.innerHTML = "";
+  playerObject.playedActionCards.forEach((card) => {
+    const cardElement = createCardUI(card);
+    playedActionCards.appendChild(cardElement);
+  });
+
   if (game.currentTurnPlayerId === playerObject.id) {
     if (actionPossible(playerObject)) {
-      // TODO
+      handleActionRound(playerObject);
       return null;
     }
 

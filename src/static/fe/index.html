@@ -48,6 +48,10 @@
       border: 1px solid gray;
       cursor: not-allowed;
     }
+    .action {
+      border: 1px solid blue;
+      cursor: pointer;
+    }
   </style>
 </head>
   <body>
@@ -92,6 +96,7 @@
         <div id="playersTurn">
           <p>your turn</p>
           <p>current round: <span id="roundName"></span></p>
+          <div id="playedActionCards" class="pile"></div>
           <button id="endOfTurnButton">end of turn</button>
         </div>
         <div id="notPlayersTurn">waiting for other player's turn to end</div>
