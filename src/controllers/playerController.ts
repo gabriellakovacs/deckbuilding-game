@@ -3,6 +3,7 @@ import { getCurrentPlayerIds } from "../models/gameModel.js";
 import { getReqData } from "../utils.js";
 import { isPlayerResponseType } from "../static/fe/types.js";
 import { createWebSocketMessagePlayer } from "../helpers.js";
+import { organizeCardsInHand } from "../static/cardHelpers.js";
 
 const headerContentJson = {
   "Content-Type": "application/json",
@@ -42,9 +43,13 @@ const savePlayer = async (req, res, webSocketServer) => {
       resWrongPlayerId(res, playerObject.id);
       return;
     }
-    playerModel.updatePlayerFile(playerObject);
+    const playerObjectBeautified = {
+      ...playerObject,
+      hand: organizeCardsInHand(playerObject.hand),
+    };
+    playerModel.updatePlayerFile(playerObjectBeautified);
     webSocketServer.clients.forEach((client) => {
-      client.send(createWebSocketMessagePlayer(playerObject));
+      client.send(createWebSocketMessagePlayer(playerObjectBeautified));
     });
     res.writeHead(200, headerContentJson);
     res.end(JSON.stringify({ success: true, data: playerObject }));

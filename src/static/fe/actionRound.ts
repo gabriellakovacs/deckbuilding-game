@@ -1,5 +1,15 @@
-import { getCardTypeFromName, isActionCardType } from "../cardHelpers.js";
-import { AllCardNames, CardInPlayer, PlayerResponse } from "../types.js";
+import {
+  getCardEffectFromName,
+  getCardTypeFromName,
+  isActionCardType,
+  shuffleArray,
+} from "../cardHelpers.js";
+import {
+  ActionCardNameType,
+  AllCardNames,
+  CardInPlayer,
+  PlayerResponse,
+} from "../types.js";
 import { savePlayerAPI } from "./playerAPICalls.js";
 
 const hasActionCard = (playerObject: PlayerResponse) => {
@@ -43,18 +53,55 @@ const moveCardWithinPlayer = (
   fromArray.splice(indexOfMoveableCard, 1);
 };
 
+const shuffleAndMoveCardsFromThrowPileToDrawPile = (
+  playerObject: PlayerResponse
+) => {
+  const shuffledThrowpile = shuffleArray(playerObject.throwPile);
+  playerObject.throwPile = [];
+  playerObject.drawPile = [...playerObject.drawPile, ...shuffledThrowpile];
+};
+
+const applyActionCardEffect = (
+  cardName: ActionCardNameType,
+  playerObject: PlayerResponse
+): PlayerResponse => {
+  const additionalEffect = getCardEffectFromName(cardName);
+
+  if (
+    additionalEffect.additionalDraw > 0 &&
+    playerObject.drawPile.length < additionalEffect.additionalDraw &&
+    playerObject.throwPile.length
+  ) {
+    shuffleAndMoveCardsFromThrowPileToDrawPile(playerObject);
+  }
+
+  return {
+    ...playerObject,
+    actionRounds: playerObject.actionRounds + additionalEffect.additionalAction,
+    shoppingRounds:
+      playerObject.shoppingRounds + additionalEffect.additionalShopping,
+    additionalTreasure:
+      playerObject.additionalTreasure + additionalEffect.additionalTreasure,
+    hand: [
+      ...playerObject.hand,
+      ...playerObject.drawPile.splice(0, additionalEffect.additionalDraw),
+    ],
+  };
+};
+
 const handleSelectActionCard = async (
   playerObject: PlayerResponse,
-  cardName: AllCardNames
+  cardName: ActionCardNameType
 ) => {
   moveCardWithinPlayer(
     cardName,
     playerObject.hand,
     playerObject.playedActionCards
   );
+  const updatePlayerObject = applyActionCardEffect(cardName, playerObject);
   await savePlayerAPI({
-    ...playerObject,
-    actionRounds: playerObject.actionRounds - 1,
+    ...updatePlayerObject,
+    actionRounds: updatePlayerObject.actionRounds - 1,
   });
 };
 
@@ -79,7 +126,7 @@ const highlightAndAddEventListenerToActionCardsInHand = (
       cardElement.addEventListener("click", () => {
         handleSelectActionCard(
           playerObject,
-          cardElement.getAttribute("data-name") as AllCardNames
+          cardElement.getAttribute("data-name") as ActionCardNameType
         );
       });
     });

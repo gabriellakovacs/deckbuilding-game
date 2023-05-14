@@ -111,25 +111,14 @@ export const getCardTypeFromName = (name: AllCardNames): CardType => {
     case "remodel":
     case "smithy":
     case "throne room":
-    case "duchy":
-    case "festival":
     case "bandit":
-    case "laboratorry":
+    case "laboratory":
     case "library":
-    case "market":
     case "mine":
     case "sentry":
     case "witch":
     case "duchy":
-    case "festival":
-    case "bandit":
     case "council room":
-    case "laboratorry":
-    case "library":
-    case "market":
-    case "mine":
-    case "sentry":
-    case "witch":
     case "artisan":
       return "action";
     default:
@@ -165,23 +154,12 @@ export const isActionCardType = (
     "remodel",
     "smithy",
     "throne room",
-    "duchy",
-    "festival",
-    "bandit",
-    "laboratorry",
-    "library",
-    "market",
     "mine",
-    "sentry",
-    "witch",
     "duchy",
-    "festival",
     "bandit",
     "council room",
-    "laboratorry",
+    "laboratory",
     "library",
-    "market",
-    "mine",
     "sentry",
     "witch",
     "artisan",
@@ -218,7 +196,7 @@ export const getCardPriceFromName = (name: AllCardNames): number => {
     case "festival":
     case "bandit":
     case "council room":
-    case "laboratorry":
+    case "laboratory":
     case "library":
     case "market":
     case "mine":
@@ -246,6 +224,202 @@ export const getCardValueFromName = (name: TreasureCardNameType) => {
       return 1;
     default:
       console.error(`Invalid treasure card name: ${name}`);
+  }
+};
+
+export const getCardEffectFromName = (name: ActionCardNameType) => {
+  switch (name) {
+    case "market":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "cellar":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "festival":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "chapel":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "moat":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "harbinger":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "merchant":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "vassal":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "village":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "workshop":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "bureaucrat":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "gardens":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "militia":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "moneylender":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "poacher":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "remodel":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "smithy":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "throne room":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "bandit":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "laboratory":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "library":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "mine":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "sentry":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "witch":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "duchy":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "council room":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    case "artisan":
+      return {
+        additionalDraw: 1,
+        additionalShopping: 1,
+        additionalAction: 1,
+        additionalTreasure: 1,
+      };
+    default:
+      throw `Invalid action name: ${name}`;
   }
 };
 

@@ -78,6 +78,7 @@ const createNewPlayerFile = (playerId: number) => {
     playedActionCards: [],
     actionRounds: 0,
     shoppingRounds: 0,
+    additionalTreasure: 0,
   };
   try {
     fs.writeFileSync(
@@ -133,6 +134,7 @@ const endOfTurnTasks = (playerObject: PlayerResponse) => {
     actionRounds: 1,
     shoppingRounds: 1,
     playedActionCards: [],
+    additionalTreasure: 0,
   };
   updatePlayerFile(playerObject);
   return playerObject;

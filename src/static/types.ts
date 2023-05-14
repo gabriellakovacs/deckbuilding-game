@@ -25,13 +25,14 @@ export type ActionCardNameType =
   | "bandit"
   | "council room"
   | "festival"
-  | "laboratorry"
+  | "laboratory"
   | "library"
   | "market"
   | "mine"
   | "sentry"
   | "witch"
-  | "artisan";
+  | "artisan"
+  | "duchy";
 
 export type AllCardNames =
   | TreasureCardNameType
@@ -67,6 +68,7 @@ export type PlayerResponse = {
   actionRounds: number;
   shoppingRounds: number;
   playedActionCards: CardInPlayer[];
+  additionalTreasure: number;
 };
 
 export type WebSocketMessage =
