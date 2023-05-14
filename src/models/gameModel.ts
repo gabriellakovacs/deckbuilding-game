@@ -93,6 +93,20 @@ const getNextTurnPlayerId = (currentGameObject: GameResponse) => {
     : currentGameObject.playerIds[currentTurnPlayerIdIndex + 1];
 };
 
+const endTurn = () => {
+  const currentGameObject = getCurrentGameObject();
+  const currentTurnPlayer = playerModel.getPlayerById(
+    currentGameObject.currentTurnPlayerId
+  );
+  playerModel.endOfTurnTasks(currentTurnPlayer);
+
+  const players = currentGameObject.playerIds.map((id) =>
+    playerModel.getPlayerById(id)
+  );
+
+  return { game: saveCurrentTurnPlayerIdInGame(), players };
+};
+
 const saveCurrentTurnPlayerIdInGame = (): GameResponse => {
   try {
     const currentGameObject = getCurrentGameObject();
@@ -192,4 +206,5 @@ export default {
   saveCurrentTurnPlayerIdInGame,
   saveNewPlayerIdInGame,
   updateGameFile,
+  endTurn,
 };

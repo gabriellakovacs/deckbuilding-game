@@ -48,7 +48,7 @@ const isPlayerType = (value: unknown): value is PlayerResponse => {
   );
 };
 
-const getPlayerObjectById = (playerId): PlayerResponse => {
+const getPlayerById = (playerId): PlayerResponse => {
   try {
     const player = fs.readFileSync(getPlayerFilePath(playerId), "utf8");
     const playerJson = player[0] === "{" ? JSON.parse(player) : {};
@@ -100,7 +100,7 @@ const saveCardsInPlayer = (
   playerId: number
 ) => {
   const cardsToBeSaved = cardInGameToCardInPlayer(cards);
-  const currentPlayerObject = getPlayerObjectById(playerId);
+  const currentPlayerObject = getPlayerById(playerId);
   const newPlayerobject = {
     ...currentPlayerObject,
     [location]: [...currentPlayerObject[location], ...cardsToBeSaved],
@@ -131,4 +131,5 @@ export default {
   saveCardsInPlayer,
   endOfTurnTasks,
   updatePlayerFile,
+  getPlayerById,
 };

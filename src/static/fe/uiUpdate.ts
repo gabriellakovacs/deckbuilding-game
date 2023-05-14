@@ -1,4 +1,9 @@
-import { CardInPlayer, GameResponse, PlayerResponse } from "../types.js";
+import {
+  CardInGame,
+  CardInPlayer,
+  GameResponse,
+  PlayerResponse,
+} from "../types.js";
 import { getCardPriceFromName, getCardTypeFromName } from "./../cardHelpers.js";
 import { actionPossible } from "./actionRound.js";
 import { handleShoppingRound } from "./shoppingRound.js";
@@ -95,10 +100,13 @@ export const updateUI = ({
   }
 };
 
-const createCardUI = (card: CardInPlayer) => {
+const createCardUI = (card: CardInPlayer | CardInGame) => {
   const price = getCardPriceFromName(card.name);
   const cardElement = document.createElement("div");
   cardElement.className = "card";
+  if ("nrOfCards" in card && card.nrOfCards === 0) {
+    cardElement.classList.add("soldOut");
+  }
   cardElement.setAttribute("data-name", card.name);
   const cardName = document.createElement("p");
   cardName.innerHTML = card.name;

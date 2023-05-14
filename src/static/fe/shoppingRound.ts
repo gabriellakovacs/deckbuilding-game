@@ -237,6 +237,7 @@ const highlightAndAddEventListenerToCardsWithinBudget = (
   const budget = getBudget(playerObject);
   const cardNamesWithinBudget = gameObject.availableCards
     .filter((card) => getCardPriceFromName(card.name) <= budget)
+    .filter((card) => card.nrOfCards > 0)
     .map((card) => card.name);
 
   const cardElementArrayFromGame = getCardElementArrayFromGame();

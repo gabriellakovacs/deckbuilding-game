@@ -82,10 +82,13 @@ const addPlayerToGame = async (req, res, webSocketServer) => {
 };
 
 const endTurn = (req, res, webSocketServer) => {
-  const game = gameModel.saveCurrentTurnPlayerIdInGame();
+  const { game, players } = gameModel.endTurn();
 
   webSocketServer.clients.forEach((client) => {
     client.send(createWebSocketMessageGame(game));
+    players.forEach((player) => {
+      client.send(createWebSocketMessagePlayer(player));
+    });
   });
 
   res.writeHead(200, headerContentJson);
