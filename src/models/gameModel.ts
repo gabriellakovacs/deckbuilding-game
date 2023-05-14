@@ -13,7 +13,6 @@ const GAME_DB_FILE_PATH = `${GAME_DB_PATH}/game.json`;
 const isGameType = (value: unknown): value is GameResponse => {
   return (
     typeof value === "object" && value !== null
-    // && "publicNumber" in value &&
     // "playerIds" in value &&
     // Array.isArray(value.playerIds) &&
     // value.playerIds.reduce((acc, current) => {
@@ -176,23 +175,6 @@ export const moveCardsFromGameToPlayer = (
   return { game, player };
 };
 
-const savePublicNumberInGame = (publicNumber: number) => {
-  const currentGameObject = getCurrentGameObject();
-  updateGameFile({
-    ...currentGameObject,
-    publicNumber,
-  });
-};
-
-const getPublicNumberFromGame = (): number | null => {
-  try {
-    const currentGameObject = getCurrentGameObject();
-    return currentGameObject?.publicNumber || null;
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
 const deleteEntireDb = () => {
   try {
     fs.rmSync(GAME_DB_PATH, { recursive: true, force: true });
@@ -203,8 +185,6 @@ const deleteEntireDb = () => {
 
 export default {
   deleteGame: deleteEntireDb,
-  getPublicNumberFromGame,
-  savePublicNumberInGame,
   createNewGameFile,
   getCurrentGameObject,
   getCurrentPlayerIds,

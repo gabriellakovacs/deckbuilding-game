@@ -32,6 +32,7 @@ export type ActionCardNameType =
   | "sentry"
   | "witch"
   | "artisan";
+
 export type AllCardNames =
   | TreasureCardNameType
   | ActionCardNameType
@@ -46,7 +47,6 @@ export type GameResponse = {
   hasStarted: boolean;
   playerIds: number[];
   currentTurnPlayerId?: number;
-  publicNumber?: number;
   availableCards?: CardInGame[];
 };
 
@@ -66,7 +66,6 @@ export type PlayerResponse = {
   hand: CardInPlayer[];
   actionRounds: number;
   shoppingRounds: number;
-  privateNumber?: number;
 };
 
 export type WebSocketMessage =
@@ -77,8 +76,4 @@ export type WebSocketMessage =
   | {
       type: "player";
       player: PlayerResponse;
-    }
-  | {
-      type: "publicNumber";
-      publicNumber: number;
     };

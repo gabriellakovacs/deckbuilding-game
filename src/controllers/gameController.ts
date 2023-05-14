@@ -92,58 +92,9 @@ const endTurn = (req, res, webSocketServer) => {
   res.end(JSON.stringify({ success: true, data: game }));
 };
 
-const getPublicNumber = (req, res) => {
-  const publicNumber = gameModel.getPublicNumberFromGame();
-
-  res.writeHead(200, headerContentJson);
-  res.end(JSON.stringify({ publicNumber }));
-};
-
-const createNewPublicNumber = (req, res, webSocketServer) => {
-  const publicNumber = Math.round(Math.random() * 100);
-  gameModel.savePublicNumberInGame(publicNumber);
-
-  webSocketServer.clients.forEach((client) => {
-    client.send(JSON.stringify({ type: "publicNumber", publicNumber }));
-  });
-
-  res.writeHead(200, headerContentJson);
-  res.end(JSON.stringify({ publicNumber }));
-};
-
-const updatePublicNumber = async (req, res, webSocketServer) => {
-  const data = await getReqData(req);
-  if (typeof data !== "string") {
-    throw new Error(`Invalid data type: ${typeof data} for updatePublicNumber`);
-  }
-  const publicNumber = JSON.parse(data)?.publicNumber;
-  if (typeof publicNumber === "number") {
-    gameModel.savePublicNumberInGame(publicNumber);
-
-    webSocketServer.clients.forEach((client) => {
-      client.send(JSON.stringify({ type: "publicNumber", publicNumber }));
-    });
-
-    res.writeHead(200, headerContentJson);
-    res.end(JSON.stringify({ success: true, publicNumber }));
-    return;
-  }
-
-  res.writeHead(400, headerContentJson);
-  res.end(
-    JSON.stringify({
-      success: false,
-      message: `Expected a number, but got: ${typeof publicNumber}: ${publicNumber}`,
-    })
-  );
-};
-
 export default {
   saveGame,
   deleteGame,
-  getPublicNumber,
-  createNewPublicNumber,
-  updatePublicNumber,
   createNewGame,
   startGame,
   endTurn,

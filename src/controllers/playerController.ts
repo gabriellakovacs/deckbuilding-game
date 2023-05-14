@@ -38,6 +38,10 @@ const savePlayer = async (req, res, webSocketServer) => {
   const playerObject: unknown = JSON.parse(data);
 
   if (isPlayerResponseType(playerObject)) {
+    if (!isValidPlayerId(playerObject.id)) {
+      resWrongPlayerId(res, playerObject.id);
+      return;
+    }
     playerModel.updatePlayerFile(playerObject);
     webSocketServer.clients.forEach((client) => {
       client.send(createWebSocketMessagePlayer(playerObject));
@@ -55,68 +59,6 @@ const savePlayer = async (req, res, webSocketServer) => {
   );
 };
 
-const getPrivateNumber = (req, res) => {
-  const playerId = req.url.split("/")[3];
-
-  if (!isValidPlayerId(playerId)) {
-    resWrongPlayerId(res, playerId);
-    return;
-  }
-  const privateNumber = playerModel.getPrivateNumberFromPlayer(playerId);
-  res.writeHead(200, headerContentJson);
-  res.end(JSON.stringify({ privateNumber }));
-};
-
-const createNewPrivateNumber = (req, res) => {
-  const playerId = req.url.split("/")[3];
-
-  if (!isValidPlayerId(playerId)) {
-    resWrongPlayerId(res, playerId);
-    return;
-  }
-  const privateNumber = Math.round(Math.random() * 100);
-  playerModel.savePrivateNumberInPlayer({ privateNumber, playerId: playerId });
-  res.writeHead(200, headerContentJson);
-  res.end(JSON.stringify({ privateNumber }));
-};
-
-const updatePrivateNumber = async (req, res) => {
-  const playerId = req.url.split("/")[3];
-
-  if (!isValidPlayerId(playerId)) {
-    resWrongPlayerId(res, playerId);
-    return;
-  }
-  const data = await getReqData(req);
-  if (typeof data !== "string") {
-    throw new Error(
-      `Invalid data type: ${typeof data} for updatePrivateNumber`
-    );
-  }
-  const privateNumber = JSON.parse(data)?.privateNumber;
-
-  if (typeof privateNumber === "number") {
-    playerModel.savePrivateNumberInPlayer({
-      playerId,
-      privateNumber,
-    });
-    res.writeHead(200, headerContentJson);
-    res.end(JSON.stringify({ success: true, privateNumber }));
-    return;
-  }
-
-  res.writeHead(400, headerContentJson);
-  res.end(
-    JSON.stringify({
-      success: false,
-      message: `Expected a number, but got: ${typeof privateNumber}: ${privateNumber}`,
-    })
-  );
-};
-
 export default {
   savePlayer,
-  getPrivateNumber,
-  createNewPrivateNumber,
-  updatePrivateNumber,
 };

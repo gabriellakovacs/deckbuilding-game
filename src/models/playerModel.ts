@@ -126,36 +126,8 @@ const endOfTurnTasks = (playerObject: PlayerResponse) => {
   return playerObject;
 };
 
-const savePrivateNumberInPlayer = ({
-  privateNumber,
-  playerId,
-}: {
-  privateNumber: number;
-  playerId: number;
-}) => {
-  try {
-    fs.writeFileSync(
-      getPlayerFilePath(playerId),
-      JSON.stringify({ privateNumber })
-    );
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
-const getPrivateNumberFromPlayer = (playerId: number) => {
-  try {
-    const playerObject = getPlayerObjectById(playerId);
-    return playerObject.privateNumber || null;
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
 export default {
   createNewPlayerFile,
-  savePrivateNumberInPlayer,
-  getPrivateNumberFromPlayer,
   saveCardsInPlayer,
   endOfTurnTasks,
   updatePlayerFile,

@@ -18,8 +18,6 @@ export const isWebSocketMessageType = (
       ? "game" in value && isGameResponseType(value.game)
       : value.type === "player"
       ? "player" in value && isPlayerResponseType(value.player)
-      : value.type === "publicNumber"
-      ? "publicNumber" in value && typeof value.publicNumber === "number"
       : true)
   );
 };
@@ -34,10 +32,6 @@ export const startWebSocket = () => {
     console.log(`Ws: BE is sending some data: ${data}`);
     const response: unknown = JSON.parse(data);
     if (isWebSocketMessageType(response)) {
-      if (response.type === "publicNumber") {
-        updatePublicNumber(JSON.parse(data).publicNumber);
-        return;
-      }
       if (response.type === "game") {
         updateUI(gameToUpdateUiInput(response.game));
         updateGameAvailableCardsUI(response.game);
@@ -59,14 +53,6 @@ export const throwUnexpectedResponse = ({ method, url, jsonResponse }) => {
   throw new Error(
     `Unexpected response from ${method} ${url}. Recieved ${jsonResponse}`
   );
-};
-
-export const updatePublicNumber = (newPublicNumber) => {
-  document.getElementById("publicNumber").innerHTML = newPublicNumber;
-};
-
-export const updatePrivateNumber = (newPrivateNumber) => {
-  document.getElementById("privateNumber").innerHTML = newPrivateNumber;
 };
 
 export const getPlayerIdFromCurrentUrl = () => {

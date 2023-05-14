@@ -75,27 +75,6 @@ const server = http.createServer(async (req, res) => {
     Game.deleteGame(req, res);
   } else if (req.url === Paths.API_CREATE_PLAYER && req.method === "POST") {
     await Game.addPlayerToGame(req, res, webSocketServer);
-  } else if (req.url === Paths.API_PUBLIC_NUMBER && req.method === "GET") {
-    Game.getPublicNumber(req, res);
-  } else if (
-    req.url.match(Paths.API_PRIVATE_NUMBER_REGEX) &&
-    req.method === "GET"
-  ) {
-    Player.getPrivateNumber(req, res);
-  } else if (req.url === Paths.API_PUBLIC_NUMBER && req.method === "POST") {
-    Game.createNewPublicNumber(req, res, webSocketServer);
-  } else if (
-    req.url.match(Paths.API_PRIVATE_NUMBER_REGEX) &&
-    req.method === "POST"
-  ) {
-    Player.createNewPrivateNumber(req, res);
-  } else if (req.url === Paths.API_PUBLIC_NUMBER && req.method === "PUT") {
-    await Game.updatePublicNumber(req, res, webSocketServer);
-  } else if (
-    req.url.match(Paths.API_PRIVATE_NUMBER_REGEX) &&
-    req.method === "PUT"
-  ) {
-    await Player.updatePrivateNumber(req, res);
   } else if (req.url === Paths.API_START_GAME && req.method === "POST") {
     await Game.startGame(req, res, webSocketServer);
   } else if (req.url.match(Paths.API_END_TURN) && req.method === "POST") {
